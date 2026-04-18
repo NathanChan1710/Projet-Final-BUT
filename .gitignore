@@ -1,7 +1,11 @@
-# Sans tables
-data/
-*.xlsx
-*.csv
+# Gestion des tables pour git
+# Ignorer uniquement les données brutes
+data/raw/
+
+# Ne PAS ignorer les CSV/XLSX ailleurs
+!data/processed/
+!data/processed/**/*.csv
+!data/processed/**/*.xlsx
 
 
 
