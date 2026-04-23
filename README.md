@@ -41,7 +41,7 @@ Projet-Final-BUT/
 │
 ├── data/
 │   └── processed/                     # Données nettoyées pour l'interface web
-│       ├── coordonnees_villes.xlsx    # Coordonnées géographiques des communes (notamment pour l'API météo)
+│       ├── coordonnees_villes.xlsx    # Coordonnées géographiques des communes (API météo)
 │       ├── culture_filtrer.xlsx       
 │       ├── donnees_generale_filtrer.xlsx  
 │       ├── education_filtrer.xlsx     
@@ -51,7 +51,7 @@ Projet-Final-BUT/
 │       └── sport.xlsx                 
 │
 ├── notebooks/                         # Exploration et préparation des données
-│   └── nettoyage des données.ipynb    # Nettoyage et filtrage des données brutes pour les enregistrer dans data/processed
+│   └── nettoyage des données.ipynb    # Nettoyage et filtrage des données brutes data/processed
 │   ├── analyse rapide.ipynb           # Analyse exploratoire rapide des jeux de données pour le dashboard
 │
 ├── .gitignore
@@ -70,7 +70,7 @@ Projet-Final-BUT/
 | Prévisions météo | [Open-Meteo Forecast API](https://api.open-meteo.com/) |
 | Logement / transactions | [DVF — data.gouv.fr](https://www.data.gouv.fr/datasets/logement-encadrement-des-loyers) |
 | Emploi | [API France Travail](https://francetravail.io/data/api) |
-| culture | [data.gouv.fr](https://www.data.gouv.fr/datasets/base-permanente-des-equipements-1) |
+| Culture | [data.gouv.fr](https://www.data.gouv.fr/datasets/base-permanente-des-equipements-1) |
 | Sport | [data.sports.gouv.fr](https://data.sports.gouv.fr/explore/dataset/equipements-sportifs/table/?sort=inst_numero) |
 
 ---
@@ -128,7 +128,8 @@ streamlit run app.py
 
 L'application est accessible à l'adresse `http://localhost:8501`.
 
-La navigation entre pages se fait via la barre en haut de l'interface sur la navbar (données générales, météo, etc...).
+La navigation entre pages se fait via la barre en haut de l'interface (données générales, météo, etc...).
+Il faut séléctionner 2 villes dans différentes dans chaque onglet, pour les comparer 
 
 ---
 
@@ -136,3 +137,14 @@ La navigation entre pages se fait via la barre en haut de l'interface sur la nav
 
 - Les appels à l'API Open-Meteo ne nécessitent pas de clé. Les données sont mises en cache 1 heure (`@st.cache_data(ttl=3600)`).
 - L'API France Travail requiert une inscription sur [francetravail.io](https://francetravail.io) pour obtenir un `client_id` et un `client_secret`.
+
+
+## Difficutlé rencontré 
+🔹 Données de transport
+Nous avions prévu une page dédiée aux transports, mais les données disponibles étaient trop fragmentées (SNCF, IDF Mobilités, réseaux locaux…).
+Les jeux de données étaient souvent régionaux, rarement communaux, et impossibles à harmoniser pour toutes les villes.
+Nous avons donc abandonné cette fonctionnalité après plusieurs recherches non concluantes.
+
+🔹 Harmonisation des pages
+Chaque membre a développé ses pages séparément, puis nous les avons intégrées dans l’application.
+Toute la mise en forme (charte DSFR, composants, styles) est centralisée dans dsfr.py, ce qui garantit une interface cohérente et simplifie le développement des pages.
