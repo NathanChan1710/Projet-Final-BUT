@@ -102,80 +102,107 @@ def render():
         filtered = filtered[filtered[col] == 1]
 
 
-    # ── KPIs DSFR ──────────────────────────────────────────────────────────────
-    st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
-    kpi1, kpi2, kpi3 = st.columns(3)
-
-    n_pub  = (filtered["Statut_public_prive"] == "Public").sum()
-    n_priv = (filtered["Statut_public_prive"] == "Privé").sum()
-
-    metric_box(kpi1, "Total établissements", len(filtered), "bleu")
-    metric_box(kpi2, "Établissements publics", n_pub,  "vert")
-    metric_box(kpi3, "Établissements privés",  n_priv, "rouge")
-
-    st.markdown('<div style="height:20px"></div>', unsafe_allow_html=True)
-
-    # ── Graphiques répartition ────────────────────────────────────────────────
+    # ── KPIs + Graphiques côte à côte par ville ────────────────────────────────
     st.markdown(
-        '<div class="section-title">Répartition</div>',
+        '<div class="section-title">Répartition par ville</div>',
         unsafe_allow_html=True,
     )
 
-    chart1, chart2 = st.columns(2)
+    def render_ville_stats(df_ville, ville_label, accent_color):
+        """Affiche les KPIs et les deux graphiques empilés pour une ville."""
+        n_total = len(df_ville)
+        n_pub   = (df_ville["Statut_public_prive"] == "Public").sum()
+        n_priv  = (df_ville["Statut_public_prive"] == "Privé").sum()
 
-    with chart1:
-        type_counts = filtered["Type_etablissement"].value_counts()
-        total_t = type_counts.sum()
-        if total_t > 0:
-            fig = go.Figure()
-            for i, (t, cnt) in enumerate(type_counts.items()):
-                pct = cnt / total_t * 100
-                fig.add_trace(go.Bar(
-                    name=str(t), x=[pct], y=["Types"], orientation="h",
-                    text=f"{t}<br>{cnt} ({pct:.0f}%)", textposition="inside",
-                    marker_color=COLORS[i % len(COLORS)],
-                ))
-            fig.update_layout(
-                barmode="stack",
-                title=dict(text="Par type d'établissement", font=dict(size=13, color=BLEU)),
-                xaxis=dict(range=[0, 100], ticksuffix="%",
-                           gridcolor=GRIS_B, tickfont=dict(size=11, color="#555")),
-                yaxis=dict(tickfont=dict(size=11, color="#555")),
-                height=140,
-                margin=dict(l=0, r=0, t=44, b=0),
-                showlegend=False,
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor=GRIS_F,
-                font=dict(family="Source Sans Pro, sans-serif", color=TEXTE),
-            )
-            st.plotly_chart(fig, use_container_width=True)
+        # En-tête ville
+        st.markdown(
+            f'<div style="font-size:0.88rem;font-weight:700;color:{accent_color};'
+            f'border-left:4px solid {accent_color};padding-left:10px;'
+            f'margin-bottom:14px;">{ville_label}</div>',
+            unsafe_allow_html=True,
+        )
 
-    with chart2:
-        n_total = len(filtered)
-        if n_total > 0:
-            fig2 = go.Figure()
-            for statut, color in [("Public", BLEU), ("Privé", ROUGE)]:
-                cnt = (filtered["Statut_public_prive"] == statut).sum()
-                pct = cnt / n_total * 100
-                fig2.add_trace(go.Bar(
-                    name=statut, x=[pct], y=["Statut"], orientation="h",
-                    text=f"{statut}<br>{cnt} ({pct:.0f}%)", textposition="inside",
-                    marker_color=color,
-                ))
-            fig2.update_layout(
-                barmode="stack",
-                title=dict(text="Public / Privé", font=dict(size=13, color=BLEU)),
-                xaxis=dict(range=[0, 100], ticksuffix="%",
-                           gridcolor=GRIS_B, tickfont=dict(size=11, color="#555")),
-                yaxis=dict(tickfont=dict(size=11, color="#555")),
-                height=140,
-                margin=dict(l=0, r=0, t=44, b=0),
-                showlegend=False,
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor=GRIS_F,
-                font=dict(family="Source Sans Pro, sans-serif", color=TEXTE),
-            )
-            st.plotly_chart(fig2, use_container_width=True)
+        # 3 métriques
+        m1, m2, m3 = st.columns(3)
+        metric_box(m1, "Total",  n_total, "bleu")
+        metric_box(m2, "Public", n_pub,   "vert")
+        metric_box(m3, "Privé",  n_priv,  "rouge")
+
+        st.markdown('<div style="height:16px"></div>', unsafe_allow_html=True)
+
+        if n_total == 0:
+            st.info("Aucun établissement pour cette sélection.")
+            return
+
+        # Graphique 1 — par type
+        type_counts = df_ville["Type_etablissement"].value_counts()
+        fig1 = go.Figure()
+        for i, (t, cnt) in enumerate(type_counts.items()):
+            pct = cnt / n_total * 100
+            fig1.add_trace(go.Bar(
+                name=str(t), x=[pct], y=["Types"], orientation="h",
+                text=f"{t}<br>{cnt} ({pct:.0f}%)", textposition="inside",
+                marker_color=COLORS[i % len(COLORS)],
+            ))
+        fig1.update_layout(
+            barmode="stack",
+            title=dict(text="Par type d'établissement", font=dict(size=12, color=BLEU)),
+            xaxis=dict(range=[0, 100], ticksuffix="%",
+                       gridcolor=GRIS_B, tickfont=dict(size=10, color="#555")),
+            yaxis=dict(tickfont=dict(size=10, color="#555")),
+            height=120, margin=dict(l=0, r=0, t=36, b=0),
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor=GRIS_F,
+            font=dict(family="Source Sans Pro, sans-serif", color=TEXTE),
+        )
+        st.plotly_chart(fig1, use_container_width=True)
+
+        # Graphique 2 — public / privé (en dessous)
+        fig2 = go.Figure()
+        for statut, color in [("Public", BLEU), ("Privé", ROUGE)]:
+            cnt = (df_ville["Statut_public_prive"] == statut).sum()
+            pct = cnt / n_total * 100
+            fig2.add_trace(go.Bar(
+                name=statut, x=[pct], y=["Statut"], orientation="h",
+                text=f"{statut}<br>{cnt} ({pct:.0f}%)", textposition="inside",
+                marker_color=color,
+            ))
+        fig2.update_layout(
+            barmode="stack",
+            title=dict(text="Public / Privé", font=dict(size=12, color=BLEU)),
+            xaxis=dict(range=[0, 100], ticksuffix="%",
+                       gridcolor=GRIS_B, tickfont=dict(size=10, color="#555")),
+            yaxis=dict(tickfont=dict(size=10, color="#555")),
+            height=120, margin=dict(l=0, r=0, t=36, b=0),
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor=GRIS_F,
+            font=dict(family="Source Sans Pro, sans-serif", color=TEXTE),
+        )
+        st.plotly_chart(fig2, use_container_width=True)
+
+    # Mise en page : ville 1 | séparateur | ville 2
+    col_v1, col_sep, col_v2 = st.columns([10, 1, 10])
+
+    with col_v1:
+        render_ville_stats(
+            filtered[filtered["Nom_commune"] == ville_1],
+            ville_1, BLEU,
+        )
+
+    with col_sep:
+        st.markdown(
+            f'<div style="border-left:1px solid {GRIS_B};min-height:340px;'
+            f'margin:0 auto;width:1px;"></div>',
+            unsafe_allow_html=True,
+        )
+
+    with col_v2:
+        render_ville_stats(
+            filtered[filtered["Nom_commune"] == ville_2],
+            ville_2, ROUGE,
+        )
+
+    st.markdown('<div style="height:8px"></div>', unsafe_allow_html=True)
 
     # ── Carte interactive ─────────────────────────────────────────────────────
     st.markdown(

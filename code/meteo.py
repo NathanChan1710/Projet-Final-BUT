@@ -150,6 +150,31 @@ def render():
     except Exception as e:
         st.error(f"Erreur prévisions : {e}")
 
+    # ── Prévisions Ville 2 ───────────────────────────────────────────────────────
+    st.markdown(f"### Prévisions 7 jours — {ville_2}")
+
+    try:
+        daily2 = fetch_previsions(lat2, lon2)
+        cols2  = st.columns(7)
+
+        for i, col in enumerate(cols2):
+            d = date.today() + timedelta(days=i)
+            wmo = daily2.get("weathercode", [0]*7)[i]
+            cond, ico = WMO_CODES.get(wmo, ("—", "?"))
+            val = get_forecast_value(daily2, var_label, i)
+
+            with col:
+                st.markdown(f"""
+                **{ "Aujourd'hui" if i==0 else JOURS_FR[d.weekday()] }**  
+                {d.day}/{d.month}  
+                {ico} {cond}  
+                **{val}**
+                """)
+
+    except Exception as e:
+        st.error(f"Erreur prévisions (ville 2) : {e}")
+
+
     # ── Historique ───────────────────────────────────────────────────────────
     st.markdown(f"### Historique 12 mois — {ville_1} vs {ville_2}")
 
