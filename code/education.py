@@ -7,6 +7,11 @@ import plotly.graph_objects as go
 
 from dsfr import BLEU, ROUGE, VERT, GRIS_F, GRIS_B, TEXTE, COLORS, metric_box
 
+from pathlib import Path
+BASE_DIR = Path(__file__).parent          # dossier code/
+DATA_DIR = BASE_DIR.parent / "data" / "processed"
+
+
 def render():
     # ── Titre de section ──────────────────────────────────────────────────────
     st.markdown(
@@ -18,11 +23,11 @@ def render():
     try:
         @st.cache_data
         def load_data():
-            return pd.read_excel("../data/processed/education_filtrer.xlsx")
+            return pd.read_excel(DATA_DIR / "education_filtrer.xlsx")
 
         df = load_data()
     except FileNotFoundError:
-        st.error("Fichier introuvable : `../data/processed/education_filtrer.xlsx`")
+        st.error("Fichier introuvable : `education.xlsx`")
         return
 
     # Nettoyage coordonnées
