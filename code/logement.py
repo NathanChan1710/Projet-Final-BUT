@@ -7,6 +7,11 @@ import plotly.graph_objects as go
 
 from dsfr import BLEU, ROUGE, VERT, GRIS_F, GRIS_B, TEXTE, metric_box
 
+from pathlib import Path
+BASE_DIR = Path(__file__).parent          # dossier code/
+DATA_DIR = BASE_DIR.parent / "data" / "processed"
+
+
 # ── Couleurs propres à cette page ─────────────────────────────────────────────
 Ville1 = "#000091"   # bleu DSFR
 Ville2   = "#E1000F"   # rouge DSFR
@@ -16,7 +21,7 @@ BORDER   = GRIS_B
 # ── Chargement des données ────────────────────────────────────────────────────
 @st.cache_data
 def load_logement():
-    return pd.read_excel("../data/processed/logement_filtrer.xlsx")
+    return pd.read_excel(DATA_DIR / "logement_filtrer.xlsx")
 
 
 # ── CSS spécifique à la page ──────────────────────────────────────────────────

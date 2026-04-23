@@ -9,6 +9,11 @@ import ast
 
 from dsfr import BLEU, ROUGE, VERT, GRIS_F, GRIS_B, TEXTE, COLORS, metric_box
 
+from pathlib import Path
+BASE_DIR = Path(__file__).parent          # dossier code/
+DATA_DIR = BASE_DIR.parent / "data" / "processed"
+
+
 # ── Colonnes RES à charger ────────────────────────────────────────────────────
 SPORT_COLS = [
     "Commune nom", "Commune INSEE", "Département Nom", "Région Nom",
@@ -69,9 +74,9 @@ CHART_LAYOUT = dict(
 @st.cache_data(show_spinner="Chargement des données sportives…")
 def load_sport():
     try:
-        return pd.read_excel("../data/processed/sport.xlsx", usecols=lambda c: c in SPORT_COLS)
+        return pd.read_excel(DATA_DIR / "sport.xlsx", usecols=lambda c: c in SPORT_COLS)
     except FileNotFoundError:
-        st.error("⚠️ Fichier `../data/processed/sport.xlsx` introuvable.")
+        st.error("⚠️ Fichier `sport` introuvable.")
         return None
     except Exception as e:
         st.error(f"Erreur de chargement : {e}")

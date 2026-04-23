@@ -8,6 +8,9 @@ import plotly.graph_objects as go
 from pathlib import Path
 
 from dsfr import BLEU, ROUGE, VERT, GRIS_F, GRIS_B, TEXTE, metric_box
+from pathlib import Path
+BASE_DIR = Path(__file__).parent          # dossier code/
+DATA_DIR = BASE_DIR.parent / "data" / "processed"
 
 # ── Constantes ────────────────────────────────────────────────────────────────
 YEARS      = list(range(2006, 2025))
@@ -18,7 +21,7 @@ BASE_COLS  = [
     "Grand secteur d'activité", "Secteur NA17", "Secteur NA38",
     "Code commune",
 ]
-PARQUET_PATH = Path("../data/processed/emploi.parquet")
+# PARQUET_PATH = Path("../data/processed/emploi.parquet")
 
 # ── Layout Plotly DSFR ────────────────────────────────────────────────────────
 CHART_LAYOUT = dict(
@@ -37,9 +40,9 @@ CHART_LAYOUT = dict(
 @st.cache_data(show_spinner="Chargement des données emploi…")
 def load_emploi():
     try:
-        return pd.read_parquet(PARQUET_PATH)
+        return pd.read_parquet(DATA_DIR / "emploi.parquet")    
     except FileNotFoundError:
-        st.error(f"⚠️ Fichier `{PARQUET_PATH}` introuvable.")
+        st.error(f"⚠️ Fichier `{"emploi"}` introuvable.")
         return None
     except Exception as e:
         st.error(f"Erreur de lecture du parquet : {e}")
