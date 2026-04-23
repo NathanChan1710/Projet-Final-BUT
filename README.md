@@ -69,7 +69,7 @@ Projet-Final-BUT/
 | Météo historique | [Open-Meteo Archive API](https://archive-api.open-meteo.com/) |
 | Prévisions météo | [Open-Meteo Forecast API](https://api.open-meteo.com/) |
 | Logement / transactions | [DVF — data.gouv.fr](https://www.data.gouv.fr/datasets/logement-encadrement-des-loyers) |
-| Emploi | [API France Travail](https://francetravail.io/data/api) |
+| Emploi | [open.urssaf.fr](https://open.urssaf.fr/explore/dataset/etablissements-et-effectifs-salaries-au-niveau-commune-x-ape-last/table/) |
 | Culture | [data.gouv.fr](https://www.data.gouv.fr/datasets/base-permanente-des-equipements-1) |
 | Sport | [data.sports.gouv.fr](https://data.sports.gouv.fr/explore/dataset/equipements-sportifs/table/?sort=inst_numero) |
 
