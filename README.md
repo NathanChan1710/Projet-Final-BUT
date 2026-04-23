@@ -28,31 +28,31 @@ France Comparateur permet de comparer deux communes françaises sur plusieurs do
 ```
 Projet-Final-BUT/
 │
-├── code/                              # Code source de l'application Streamlit
-│   ├── app.py                         # Point d'entrée — configuration, routing, navbar et layout global
-│   ├── dsfr.py                        # Charte graphique DSFR partagée (palette, CSS, composants réutilisables)
-│   ├── accueil.py                     # Page d'accueil de l'application
-│   ├── donnees_generales.py           # Page données générales sur les communes
-│   ├── education.py                   # Page établissements scolaires (carte, filtres, KPIs)
-│   ├── emploi.py                      # Page emploi (taux de chômage, secteurs d'activité)
-│   ├── logement.py                    # Page logement (prix au m², transactions DVF)
-│   ├── meteo.py                       # Page météo (prévisions 7 jours + historique 12 mois)
-│   └── sport.py                       # Page équipements et clubs sportifs
+├── code/                              
+│   ├── app.py                         
+│   ├── dsfr.py                        
+│   ├── accueil.py                     
+│   ├── donnees_generales.py           
+│   ├── education.py                   
+│   ├── emploi.py                      
+│   ├── logement.py                    
+│   ├── meteo.py                       
+│   └── sport.py                       
 │
 ├── data/
 │   └── processed/                     # Données nettoyées et prêtes à l'emploi
 │       ├── coordonnees_villes.xlsx    # Coordonnées géographiques des communes
-│       ├── culture_filtrer.xlsx       # Equipements culturels filtrés
-│       ├── donnees_generale_filtrer.xlsx  # Données générales INSEE filtrées
-│       ├── education_filtrer.xlsx     # Annuaire des établissements scolaires filtré
-│       ├── emploi.parquet             # Données emploi au format Parquet (lecture rapide)
-│       ├── emploi.xlsx                # Données emploi au format Excel
-│       ├── logement_filtrer.xlsx      # Données logement / transactions DVF filtrées
-│       └── sport.xlsx                 # Données équipements sportifs
+│       ├── culture_filtrer.xlsx       
+│       ├── donnees_generale_filtrer.xlsx  
+│       ├── education_filtrer.xlsx     
+│       ├── emploi.parquet             
+│       ├── emploi.xlsx                
+│       ├── logement_filtrer.xlsx      
+│       └── sport.xlsx                 
 │
 ├── notebooks/                         # Exploration et préparation des données
-│   ├── analyse rapide.ipynb           # Analyse exploratoire rapide des jeux de données
-│   └── nettoyage des données.ipynb    # Pipeline de nettoyage et filtrage des données brutes
+│   └── nettoyage des données.ipynb    # Nettoyage et filtrage des données brutes pour les enregistrer dans data/processed
+│   ├── analyse rapide.ipynb           # Analyse exploratoire rapide des jeux de données pour le dashboard
 │
 ├── .gitignore
 ├── README.md
