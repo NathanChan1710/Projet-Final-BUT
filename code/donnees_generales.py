@@ -23,7 +23,6 @@ def load_general():
     return pd.read_excel(DATA_DIR / "donnees_generale_filtrer.xlsx")
 
 
-
 def parse_pres(val):
     """Parse une colonne 'presentation' qui peut contenir une liste Python sérialisée."""
     try:

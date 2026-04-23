@@ -240,7 +240,7 @@ def render():
         </article>
         <article class="info-card">
             <div class="card-icon">{city_icon}</div>
-            <div class="card-title">Plus De XXX Villes À Comparer</div>
+            <div class="card-title">Plus De 480 Villes À Comparer</div>
             <div class="card-text">de plus 20 000 habitants</div>
             <div class="card-bottom"></div>
         </article>
