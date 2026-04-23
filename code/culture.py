@@ -10,7 +10,6 @@ from dsfr import BLEU, ROUGE, VERT, GRIS_B, TEXTE, COLORS, metric_box
 from pathlib import Path
 BASE_DIR = Path(__file__).parent          # dossier code/
 DATA_DIR = BASE_DIR.parent / "data" / "processed"
-
 # ── Palette locale (accès par clé string comme dans culture_page.py) ──────────
 _COLORS = {"bleu": BLEU, "rouge": ROUGE, "vert": VERT}
 
@@ -50,7 +49,7 @@ COL = {
     "surface":       "Surface_Bibliotheque",
     "lat":           "Latitude",
     "lon":           "Longitude",
-    "ville":         "libelle_geographique",
+    "ville":         "libelle_geographique", 
     "code_insee":    "code_insee",
     "demographie":   "Demographie_AP"
 }
@@ -103,14 +102,83 @@ def _score_bar(score: float, label: str):
 
 @st.cache_data(show_spinner="Chargement des données culturelles…")
 def _load_culture():
-    data_path = Path(DATA_DIR / "donnees_generale_filtrer.xlsx")
+    data_path = Path(DATA_DIR / "culture_filtrer.xlsx")
     if not data_path.exists():
         return None
     try:
-        return pd.read_excel(data_path, usecols=lambda c: c in CULTURE_COLS)
+        # On charge TOUTES les colonnes pour pouvoir détecter les noms réels
+        return pd.read_excel(data_path)
     except Exception as e:
         st.error(f"⚠️ Erreur de chargement : {e}")
         return None
+
+
+def _detect_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
+    """Retourne la première colonne du df qui correspond à l'un des candidats
+    (comparaison insensible à la casse et aux espaces)."""
+    normalized = {c.strip().lower(): c for c in df.columns}
+    for candidate in candidates:
+        hit = normalized.get(candidate.strip().lower())
+        if hit:
+            return hit
+    return None
+
+
+def _resolve_cols(df: pd.DataFrame) -> bool:
+    """
+    Met à jour COL avec les noms de colonnes réels trouvés dans df.
+    Retourne False et affiche un message si une colonne critique est absente.
+    """
+    global COL
+
+    ALIASES: dict[str, list[str]] = {
+        "ville":         ["libelle_geographique", "libelle geographique", "commune",
+                          "nom_commune", "nom commune", "ville", "city"],
+        "nom":           ["Nom", "nom", "name", "libelle"],
+        "type":          ["Type équipement ou lieu", "type equipement ou lieu",
+                          "type", "type_equipement"],
+        "label":         ["Label et appellation", "label et appellation",
+                          "label", "appellation"],
+        "region":        ["Région", "region"],
+        "domaine":       ["Domaine", "domaine"],
+        "departement":   ["Département", "departement"],
+        "fonction1":     ["Fonction_1", "Fonction 1", "fonction1"],
+        "fonction2":     ["Fonction_2", "Fonction 2", "fonction2"],
+        "fonction3":     ["Fonction_3", "Fonction 3", "fonction3"],
+        "fonction4":     ["Fonction_4", "Fonction 4", "fonction4"],
+        "fauteuils":     ["Nombre_fauteuils_de_cinema", "nombre fauteuils de cinema",
+                          "nb_fauteuils", "fauteuils"],
+        "ecrans":        ["Nombre_ecrans", "nombre ecrans", "nb_ecrans", "ecrans"],
+        "salles_theatre":["Nombre_de_salles_de_theatre", "nombre de salles de theatre",
+                          "nb_salles_theatre"],
+        "jauge":         ["Jauge_du_theatre", "jauge du theatre", "jauge"],
+        "surface":       ["Surface_Bibliotheque", "surface bibliotheque", "surface"],
+        "lat":           ["Latitude", "latitude", "lat"],
+        "lon":           ["Longitude", "longitude", "lon", "lng"],
+        "code_insee":    ["code_insee", "code insee", "insee"],
+        "demographie":   ["Demographie_AP", "demographie", "population"],
+    }
+
+    resolved = {}
+    missing_critical = []
+    for key, candidates in ALIASES.items():
+        found = _detect_col(df, candidates)
+        if found:
+            resolved[key] = found
+        else:
+            resolved[key] = candidates[0]       # valeur par défaut (peut manquer)
+            if key in ("ville", "type", "nom"):  # colonnes indispensables
+                missing_critical.append(candidates[0])
+
+    COL = resolved
+
+    if missing_critical:
+        st.error(
+            f"⚠️ Colonnes introuvables dans le fichier : **{', '.join(missing_critical)}**\n\n"
+            f"Colonnes disponibles : `{', '.join(df.columns.tolist())}`"
+        )
+        return False
+    return True
 
 
 def _clean(df: pd.DataFrame) -> pd.DataFrame:
