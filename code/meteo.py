@@ -6,10 +6,12 @@ import plotly.graph_objects as go
 from datetime import date, timedelta
 
 from dsfr import BLEU, ROUGE, GRIS_F, GRIS_B, TEXTE, metric_box
-
+from pathlib import Path
+BASE_DIR = Path(__file__).parent          # dossier code/
+DATA_DIR = BASE_DIR.parent / "data" / "processed"
 
 # ── CHARGEMENT DES COORDONNÉES ───────────────────────────────────────────────
-coordonnees_df = pd.read_excel("../data/processed/coordonnees_villes.xlsx")
+coordonnees_df = pd.read_excel(DATA_DIR/ "coordonnees_villes.xlsx")
 
 VILLES = {
     row["ville"]: {"lat": row["latitude"], "lon": row["longitude"]}
