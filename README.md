@@ -1,14 +1,12 @@
-# 🏙️ CityCompare — Comparateur de Villes Françaises
+# France Comparateur — Outils Décisionnels
 
-> **SAE Outils Décisionnels** — IUT / BUT Science des Données
+Application web interactive de comparaison de communes françaises, développée dans le cadre de la SAE Outils Décisionnels (BUT Science des Données).
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-App-red?logo=streamlit)](https://streamlit.io/)
-[![Licence](https://img.shields.io/badge/Licence-MIT-green)](LICENSE)
+**Application déployée :** [projet-final-but3-camille-manohy-nathan.streamlit.app](https://projet-final-but3-camille-manohy-nathan.streamlit.app)
 
 ---
 
-## 👥 Équipe
+## Equipe
 
 | Nom | Prénom |
 |-----|--------|
@@ -18,116 +16,60 @@
 
 ---
 
-## 📌 Description du projet
+## Description
 
-**CityCompare** est une application web interactive permettant de **comparer deux villes françaises** (parmi celles de plus de 20 000 habitants) sur plusieurs dimensions clés : coût de la vie, emploi, logement, météo, culture, tourisme et bien plus encore.
-
-L'application vise à aider les utilisateurs dans leur prise de décision lors d'un choix de ville (déménagement, études, emploi…) en centralisant des données issues de sources publiques fiables.
+France Comparateur permet de comparer deux communes françaises sur plusieurs dimensions : météo, éducation, logement, emploi et données générales. L'interface s'appuie sur la charte graphique du Système de Design de l'Etat (DSFR) et mobilise des données publiques issues de sources officielles.
 
 ---
 
-## 🌐 Accès à l'application
-
-> 🔗 **URL de l'application déployée :** `https://<votre-app>.streamlit.app`  
-> *(À mettre à jour après déploiement sur Streamlit Cloud ou shinyapps.io)*
-
----
-
-## ✨ Fonctionnalités
-
-- 🔍 **Sélection de deux villes** parmi toutes les communes françaises de +20 000 habitants
-- 📊 **Données générales** : population, superficie, densité, catégorie urbaine
-- 💼 **Emploi** : taux de chômage, secteurs d'activité, offres d'emploi (Pôle Emploi / France Travail)
-- 🏠 **Logement** : prix au m², loyers médians, part de propriétaires/locataires
-- 🌦️ **Météo** :
-  - Données climatiques annuelles (températures, précipitations)
-  - Météo des prochains jours en temps réel
-- 🎭 **Culture & Tourisme** : musées, monuments, équipements culturels
-- 🎓 **Formation** : établissements d'enseignement supérieur
-- ⚽ **Sports** : clubs et infrastructures sportives
-- 📰 **Informations générales** via Wikipedia
-
----
-
-## 📂 Structure du projet
+## Structure du projet
 
 ```
-citycompare/
-│
-├── app.py                    # Point d'entrée de l'application Streamlit
-├── requirements.txt          # Dépendances Python
-├── README.md                 # Ce fichier
-│
-├── data/                     # Données statiques téléchargées
-│   ├── communes_20k.csv      # Liste des communes +20 000 hab. (INSEE)
-│   ├── logement.csv          # Données logement (INSEE / DVF)
-│   ├── emploi.csv            # Données emploi (INSEE)
-│   └── climat.csv            # Normales climatiques (Météo-France)
-│
-├── scripts/                  # Scripts d'import et de traitement des données
-│   ├── fetch_communes.py     # Récupération et filtrage des communes INSEE
-│   ├── fetch_logement.py     # Traitement des données DVF / INSEE logement
-│   ├── fetch_emploi.py       # Import données emploi INSEE + API France Travail
-│   ├── fetch_meteo.py        # Appels API météo (Open-Meteo)
-│   └── fetch_wikipedia.py    # Résumés Wikipedia via API
-│
-├── pages/                    # Modules de l'interface (pages Streamlit)
-│   ├── generales.py
-│   ├── emploi.py
-│   ├── logement.py
-│   ├── meteo.py
-│   └── culture_tourisme.py
-│
-└── utils/
-    ├── charts.py             # Fonctions de visualisation (Plotly / Altair)
-    └── helpers.py            # Fonctions utilitaires
+.
+├── app.py                  # Point d'entrée — routing et layout global
+├── dsfr.py                 # Charte graphique DSFR partagée (CSS, palette, composants)
+├── meteo.py                # Page Météo
+├── education.py            # Page Education
+├── requirements.txt
+├── data/
+│   └── processed/          # Fichiers de données prétraités (.xlsx)
+└── notebooks/              # Notebooks d'exploration et de préparation des données
 ```
 
 ---
 
-## 📡 Sources de données
+## Sources de données
 
-### Données statiques (fichiers téléchargés)
-
-| Thème | Source | Format | Description |
-|-------|--------|---------|-------------|
-| Liste des communes | [INSEE — COG](https://www.insee.fr/fr/information/2560452) | CSV | Communes françaises avec population |
-| Emploi | [INSEE — RP](https://www.insee.fr/fr/statistiques/7632870) | CSV | Taux de chômage, catégories socioprofessionnelles |
-| Logement | [INSEE — RP Logement](https://www.insee.fr/fr/statistiques/7632867) | CSV | Statut d'occupation, parc immobilier |
-| Prix immobilier | [DVF / data.gouv.fr](https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/) | CSV | Transactions immobilières |
-| Climatologie | [Météo-France Open Data](https://portail-api.meteofrance.fr/) | CSV | Normales climatiques par station |
-
-### APIs (temps réel)
-
-| Thème | API | Documentation |
-|-------|-----|---------------|
-| Météo actuelle & prévisions | [Open-Meteo](https://open-meteo.com/) | Gratuite, sans clé |
-| Informations générales | [Wikipedia REST API](https://fr.wikipedia.org/api/rest_v1/) | Gratuite |
-| Offres d'emploi | [API France Travail](https://francetravail.io/data/api) | Inscription requise |
-| Géolocalisation | [API Adresse (gouv.fr)](https://adresse.data.gouv.fr/api-doc/adresse) | Gratuite, sans clé |
+| Thème | Source |
+|-------|--------|
+| Etablissements scolaires | [data.gouv.fr — Annuaire de l'éducation](https://www.data.gouv.fr/fr/datasets/annuaire-de-leducation/) |
+| Météo historique | [Open-Meteo Archive API](https://archive-api.open-meteo.com/) |
+| Prévisions météo | [Open-Meteo Forecast API](https://api.open-meteo.com/) |
+| Logement / transactions | [DVF — data.gouv.fr](https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/) |
+| Emploi | [API France Travail](https://francetravail.io/data/api) |
 
 ---
 
-## 🚀 Installation et lancement en local
+## Installation et lancement en local
 
 ### Prérequis
 
-- Python **3.10 ou supérieur**
-- `pip` ou `conda`
+- Python 3.10 ou supérieur
+- `pip`
 
 ### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/<votre-repo>/citycompare.git
-cd citycompare
+git clone https://github.com/NathanChan1710/Projet-Final-BUT.git
+cd Projet-Final-BUT
 ```
 
-### 2. Créer un environnement virtuel (recommandé)
+### 2. Créer un environnement virtuel
 
 ```bash
 python -m venv venv
-source venv/bin/activate        # Linux / macOS
-venv\Scripts\activate           # Windows
+source venv/bin/activate      # Linux / macOS
+venv\Scripts\activate         # Windows
 ```
 
 ### 3. Installer les dépendances
@@ -136,74 +78,36 @@ venv\Scripts\activate           # Windows
 pip install -r requirements.txt
 ```
 
-### 4. Configurer les variables d'environnement
+Les dépendances principales sont :
 
-Créez un fichier `.env` à la racine du projet :
-
-```env
-FRANCE_TRAVAIL_CLIENT_ID=votre_client_id
-FRANCE_TRAVAIL_CLIENT_SECRET=votre_client_secret
+```
+streamlit
+pandas
+plotly
+folium
+streamlit-folium
+requests
+openpyxl
 ```
 
-> ⚠️ Ne commitez jamais ce fichier. Il est déjà listé dans le `.gitignore`.
+### 4. Vérifier la présence des données
 
-### 5. Préparer les données locales
+Les fichiers de données prétraitées doivent être présents dans `data/processed/` avant de lancer l'application. Si ce dossier est vide, exécutez d'abord les notebooks de préparation situés dans `notebooks/`.
 
-```bash
-python scripts/fetch_communes.py
-python scripts/fetch_logement.py
-python scripts/fetch_emploi.py
-```
-
-### 6. Lancer l'application
+### 5. Lancer l'application
 
 ```bash
 streamlit run app.py
 ```
 
-L'application est accessible à l'adresse : `http://localhost:8501`
+L'application est accessible à l'adresse `http://localhost:8501`.
+
+La navigation entre pages se fait via la barre en haut de l'interface (`Meteo` / `Education`).
 
 ---
 
-## 🗺️ Mode d'emploi de l'interface
+## Remarques
 
-1. **Page d'accueil** : sélectionnez deux villes dans les menus déroulants filtrés (communes >20 000 hab.)
-2. **Navigation par onglets** : parcourez les thèmes disponibles (Général, Emploi, Logement, Météo, Culture…)
-3. **Visualisations** : chaque section affiche des graphiques comparatifs interactifs (Plotly)
-4. **Météo** : la section météo affiche à la fois les données climatiques historiques et les prévisions des 7 prochains jours
-5. **Export** : possibilité d'exporter les comparaisons en PDF ou CSV (si activé)
-
----
-
-## 📦 Dépendances principales
-
-```txt
-streamlit>=1.32.0
-pandas>=2.0.0
-plotly>=5.18.0
-requests>=2.31.0
-python-dotenv>=1.0.0
-altair>=5.0.0
-numpy>=1.26.0
-```
-
-> Liste complète dans `requirements.txt`
-
----
-
-## 🎬 Vidéo de démonstration
-
-> 🎥 **Lien vers la vidéo :** `https://` *(à compléter)*  
-> *(Hébergée en mode privé sur YouTube / Google Drive)*
-
----
-
-## 📄 Rapport
-
-Le rapport complet du projet (choix des sources, processus de récupération, présentation de l'interface) est disponible dans le fichier `rapport.pdf` à la racine du dépôt.
-
----
-
-## 📝 Licence
-
-Ce projet est réalisé dans le cadre d'une SAE universitaire. Tous droits réservés aux auteurs.
+- Les appels à l'API Open-Meteo ne nécessitent pas de clé. Les données sont mises en cache 1 heure (`@st.cache_data(ttl=3600)`).
+- L'API France Travail requiert une inscription sur [francetravail.io](https://francetravail.io) pour obtenir un `client_id` et un `client_secret`. Ces identifiants doivent être renseignés dans les notebooks de collecte ou dans un fichier `.env` (non versionné).
+- Le fichier `.env` ne doit pas être commité. Il est déjà référencé dans `.gitignore`.
