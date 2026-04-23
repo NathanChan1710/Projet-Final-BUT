@@ -65,11 +65,13 @@ Projet-Final-BUT/
 
 | Thème | Source |
 |-------|--------|
-| Etablissements scolaires | [data.gouv.fr — Annuaire de l'éducation](https://www.data.gouv.fr/fr/datasets/annuaire-de-leducation/) |
+| Etablissements scolaires | [data.gouv.fr — Annuaire de l'éducation](https://data.sports.gouv.fr/explore/dataset/annuaire-de-l-education/table/?disjunctive.type_etablissement&disjunctive.libelle_academie&disjunctive.libelle_departement&disjunctive.libelle_region&disjunctive.ministere_tutelle&disjunctive.appartenance_education_prioritaire&disjunctive.nom_commune&disjunctive.code_postal&disjunctive.code_departement) |
 | Météo historique | [Open-Meteo Archive API](https://archive-api.open-meteo.com/) |
 | Prévisions météo | [Open-Meteo Forecast API](https://api.open-meteo.com/) |
-| Logement / transactions | [DVF — data.gouv.fr](https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/) |
+| Logement / transactions | [DVF — data.gouv.fr](https://www.data.gouv.fr/datasets/logement-encadrement-des-loyers) |
 | Emploi | [API France Travail](https://francetravail.io/data/api) |
+| culture | [data.gouv.fr](https://www.data.gouv.fr/datasets/base-permanente-des-equipements-1) |
+| Sport | [data.sports.gouv.fr](https://data.sports.gouv.fr/explore/dataset/equipements-sportifs/table/?sort=inst_numero) |
 
 ---
 
