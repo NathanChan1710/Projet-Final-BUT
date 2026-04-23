@@ -160,30 +160,23 @@ def inject_css(active_page: str = "meteo"):
 </style>
 """, unsafe_allow_html=True)
 
+
 def render_header(tagline: str = "Comparateur de communes françaises"):
     """Bandeau tricolore + en-tête gouvernemental."""
     st.markdown('<div class="bandeau"></div>', unsafe_allow_html=True)
-
-    st.markdown("""
+    st.markdown(f"""
 <div class="gov-header">
-
-    <!-- Logo officiel République Française -->
+                
+<!-- Logo République Française -->
     <div class="rf-logo">
-        <svg width="90" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
-            <rect width="66" height="130" fill="#000091"/>
-            <rect x="66" width="66" height="130" fill="white"/>
-            <rect x="132" width="66" height="130" fill="#E1000F"/>
-            <text x="100" y="155" font-size="22" text-anchor="middle" font-family="Marianne, Arial" fill="#000">
-                République Française
-            </text>
-        </svg>
+        <img src="Republique-francaise-logo.svg.png" 
+             alt="République Française" 
+             style="height:70px; margin-right:20px;">
     </div>
-
-    <div class="app-block">
+        <div class="app-block">
         <div class="app-name">France Comparateur</div>
-        <div class="app-tagline">""" + tagline + """</div>
+        <div class="app-tagline">{tagline}</div>
     </div>
-
 </div>
 """, unsafe_allow_html=True)
 
