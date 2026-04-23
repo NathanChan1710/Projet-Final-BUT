@@ -166,14 +166,8 @@ def render_header(tagline: str = "Comparateur de communes françaises"):
     st.markdown('<div class="bandeau"></div>', unsafe_allow_html=True)
     st.markdown(f"""
 <div class="gov-header">
-                
-<!-- Logo République Française -->
-    <div class="rf-logo">
-        <img src="Republique-francaise-logo.svg.png" 
-             alt="République Française" 
-             style="height:70px; margin-right:20px;">
-    </div>
-        <div class="app-block">
+    <div class="rf-logo">République<br>Française</div>
+    <div class="app-block">
         <div class="app-name">France Comparateur</div>
         <div class="app-tagline">{tagline}</div>
     </div>
@@ -188,6 +182,7 @@ def render_navbar(active_page: str):
         ("accueil",     "Accueil"),
         ("donnees",   "Données générales"),
         ("meteo",     "Météo"),
+
         ("education", "Éducation"),
         ("sport", "Sport"),
         ("emploi", "Emploi"),
