@@ -40,8 +40,8 @@ Projet-Final-BUT/
 │   └── sport.py                       
 │
 ├── data/
-│   └── processed/                     # Données nettoyées et prêtes à l'emploi
-│       ├── coordonnees_villes.xlsx    # Coordonnées géographiques des communes
+│   └── processed/                     # Données nettoyées pour l'interface web
+│       ├── coordonnees_villes.xlsx    # Coordonnées géographiques des communes (notamment pour l'API météo)
 │       ├── culture_filtrer.xlsx       
 │       ├── donnees_generale_filtrer.xlsx  
 │       ├── education_filtrer.xlsx     
