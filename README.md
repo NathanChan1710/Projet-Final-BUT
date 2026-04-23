@@ -129,7 +129,7 @@ streamlit run app.py
 L'application est accessible à l'adresse `http://localhost:8501`.
 
 La navigation entre pages se fait via la barre en haut de l'interface (données générales, météo, etc...).
-Il faut séléctionner 2 villes dans différentes dans chaque onglet, pour les comparer 
+Il faut séléctionner 2 villes différentes dans chaque onglet, pour les comparer, 
 
 ---
 
@@ -147,4 +147,5 @@ Nous avons donc abandonné cette fonctionnalité après plusieurs recherches non
 
 🔹 Harmonisation des pages
 Chaque membre a développé ses pages séparément, puis nous les avons intégrées dans l’application.
+Maque de cohésion dans les filtres, on aimerait améliorer cela en faisant 2 sélecteurs qui restent entre chaque onglet.
 Toute la mise en forme (charte DSFR, composants, styles) est centralisée dans dsfr.py, ce qui garantit une interface cohérente et simplifie le développement des pages.
