@@ -7,6 +7,11 @@ import ast
 
 from dsfr import BLEU, ROUGE, VERT, GRIS_F, GRIS_B, TEXTE, metric_box
 
+
+from pathlib import Path
+BASE_DIR = Path(__file__).parent          # dossier code/
+DATA_DIR = BASE_DIR.parent / "data" / "processed"
+
 # ── Couleurs propres à cette page ─────────────────────────────────────────────
 COLOMBES = "#000091"   # bleu DSFR
 ANGERS   = "#E1000F"   # rouge DSFR
@@ -15,7 +20,8 @@ ANGERS   = "#E1000F"   # rouge DSFR
 # ── Chargement des données ────────────────────────────────────────────────────
 @st.cache_data
 def load_general():
-    return pd.read_excel("../data/processed/donnees_generale_filtrer.xlsx")
+    return pd.read_excel(DATA_DIR / "donnees_generale_filtrer.xlsx")
+
 
 
 def parse_pres(val):

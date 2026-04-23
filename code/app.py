@@ -4,7 +4,6 @@
 import streamlit as st
 
 from dsfr import inject_css, render_header, render_navbar, render_footer
-
 # ── Configuration (une seule fois, ici) ───────────────────────────────────────
 st.set_page_config(
     page_title="France Comparateur",
