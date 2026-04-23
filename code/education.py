@@ -16,7 +16,11 @@ def render():
 
     # ── Chargement ─────────────────────────────────────────────────────────────
     try:
-        df = pd.read_excel("../data/processed/education_filtrer.xlsx")
+        @st.cache_data
+        def load_data():
+            return pd.read_excel("../data/processed/education_filtrer.xlsx")
+
+        df = load_data()
     except FileNotFoundError:
         st.error("Fichier introuvable : `../data/processed/education_filtrer.xlsx`")
         return

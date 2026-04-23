@@ -179,9 +179,13 @@ def render_navbar(active_page: str):
     """Navbar horizontale DSFR avec navigation Streamlit (sans nouvel onglet)."""
 
     pages = [
+        ("accueil",     "Accueil"),
         ("donnees",   "Données générales"),
         ("meteo",     "Météo"),
         ("education", "Éducation"),
+        ("sport", "Sport"),
+        ("emploi", "Emploi"),
+        ("culture", "Culture"),
         ("logement",  "Logement")
     ]
 
