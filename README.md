@@ -10,30 +10,53 @@ Application web interactive de comparaison de communes françaises, développée
 
 | Nom | Prénom |
 |-----|--------|
-| CHANSINGMAN | Nathan |
 | FRANCESCHIN | Camille |
 | RATSIMBA | Manohy |
+| CHAN SING MAN | Nathan |
 
 ---
 
 ## Description
 
-France Comparateur permet de comparer deux communes françaises sur plusieurs dimensions : météo, éducation, logement, emploi et données générales. L'interface s'appuie sur la charte graphique du Système de Design de l'Etat (DSFR) et mobilise des données publiques issues de sources officielles.
+France Comparateur permet de comparer deux communes françaises sur plusieurs données tel que les données générales (population, taille, etc), la météo, l'éducation, les logements, l'emploi et la culture de chaque villes. L'interface s'appuie sur la charte graphique du Système de Design de l'Etat (DSFR) et mobilise des données publiques issues de sources officielles.
 
 ---
 
 ## Structure du projet
 
+
 ```
-.
-├── app.py                  # Point d'entrée — routing et layout global
-├── dsfr.py                 # Charte graphique DSFR partagée (CSS, palette, composants)
-├── meteo.py                # Page Météo
-├── education.py            # Page Education
-├── requirements.txt
+Projet-Final-BUT/
+│
+├── code/                              # Code source de l'application Streamlit
+│   ├── app.py                         # Point d'entrée — configuration, routing, navbar et layout global
+│   ├── dsfr.py                        # Charte graphique DSFR partagée (palette, CSS, composants réutilisables)
+│   ├── accueil.py                     # Page d'accueil de l'application
+│   ├── donnees_generales.py           # Page données générales sur les communes
+│   ├── education.py                   # Page établissements scolaires (carte, filtres, KPIs)
+│   ├── emploi.py                      # Page emploi (taux de chômage, secteurs d'activité)
+│   ├── logement.py                    # Page logement (prix au m², transactions DVF)
+│   ├── meteo.py                       # Page météo (prévisions 7 jours + historique 12 mois)
+│   └── sport.py                       # Page équipements et clubs sportifs
+│
 ├── data/
-│   └── processed/          # Fichiers de données prétraités (.xlsx)
-└── notebooks/              # Notebooks d'exploration et de préparation des données
+│   └── processed/                     # Données nettoyées et prêtes à l'emploi
+│       ├── coordonnees_villes.xlsx    # Coordonnées géographiques des communes
+│       ├── culture_filtrer.xlsx       # Equipements culturels filtrés
+│       ├── donnees_generale_filtrer.xlsx  # Données générales INSEE filtrées
+│       ├── education_filtrer.xlsx     # Annuaire des établissements scolaires filtré
+│       ├── emploi.parquet             # Données emploi au format Parquet (lecture rapide)
+│       ├── emploi.xlsx                # Données emploi au format Excel
+│       ├── logement_filtrer.xlsx      # Données logement / transactions DVF filtrées
+│       └── sport.xlsx                 # Données équipements sportifs
+│
+├── notebooks/                         # Exploration et préparation des données
+│   ├── analyse rapide.ipynb           # Analyse exploratoire rapide des jeux de données
+│   └── nettoyage des données.ipynb    # Pipeline de nettoyage et filtrage des données brutes
+│
+├── .gitignore
+├── README.md
+└── requirements.txt                   # Dépendances Python
 ```
 
 ---
@@ -92,7 +115,8 @@ openpyxl
 
 ### 4. Vérifier la présence des données
 
-Les fichiers de données prétraitées doivent être présents dans `data/processed/` avant de lancer l'application. Si ce dossier est vide, exécutez d'abord les notebooks de préparation situés dans `notebooks/`.
+Les fichiers de données prétraitées doivent être présents dans `data/processed/` avant de lancer l'application. Si ce dossier est vide, exécutez d'abord les notebooks de préparation situés dans `notebooks/`. 
+Attention, les fichiers bruts ne sont pas commit sur ce repo, il faut les télécharger si on veut avoir les données brut.
 
 ### 5. Lancer l'application
 
@@ -102,12 +126,11 @@ streamlit run app.py
 
 L'application est accessible à l'adresse `http://localhost:8501`.
 
-La navigation entre pages se fait via la barre en haut de l'interface (`Meteo` / `Education`).
+La navigation entre pages se fait via la barre en haut de l'interface sur la navbar (données générales, météo, etc...).
 
 ---
 
 ## Remarques
 
 - Les appels à l'API Open-Meteo ne nécessitent pas de clé. Les données sont mises en cache 1 heure (`@st.cache_data(ttl=3600)`).
-- L'API France Travail requiert une inscription sur [francetravail.io](https://francetravail.io) pour obtenir un `client_id` et un `client_secret`. Ces identifiants doivent être renseignés dans les notebooks de collecte ou dans un fichier `.env` (non versionné).
-- Le fichier `.env` ne doit pas être commité. Il est déjà référencé dans `.gitignore`.
+- L'API France Travail requiert une inscription sur [francetravail.io](https://francetravail.io) pour obtenir un `client_id` et un `client_secret`.
