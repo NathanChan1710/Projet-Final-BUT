@@ -133,12 +133,6 @@ Il faut séléctionner 2 villes différentes dans chaque onglet, pour les compar
 
 ---
 
-## Remarques
-
-- Les appels à l'API Open-Meteo ne nécessitent pas de clé. Les données sont mises en cache 1 heure (`@st.cache_data(ttl=3600)`).
-- L'API France Travail requiert une inscription sur [francetravail.io](https://francetravail.io) pour obtenir un `client_id` et un `client_secret`.
-
-
 ## Difficutlé rencontré 
 🔹 Données de transport
 Nous avions prévu une page dédiée aux transports, mais les données disponibles étaient trop fragmentées (SNCF, IDF Mobilités, réseaux locaux…).
