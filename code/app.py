@@ -2,8 +2,21 @@
 # Lancement : streamlit run app.py
 
 import streamlit as st
+import pandas as pd
+from pathlib import Path
 
 from dsfr import inject_css, render_header, render_navbar, render_footer
+
+BASE_DIR = Path(__file__).parent
+DATA_DIR = BASE_DIR.parent / "data" / "processed"
+
+
+@st.cache_data(show_spinner=False)
+def load_villes_master():
+    df = pd.read_excel(DATA_DIR / "donnees_generale_filtrer.xlsx", usecols=["nom_standard"])
+    return sorted(df["nom_standard"].dropna().unique().tolist())
+
+
 # ── Configuration (une seule fois, ici) ───────────────────────────────────────
 st.set_page_config(
     page_title="France Comparateur",
@@ -26,6 +39,33 @@ if active_page not in PAGES_VALIDES:
 
 # ── Navbar ────────────────────────────────────────────────────────────────────
 render_navbar(active_page)
+
+# ── Sélecteur de villes global (masqué sur l'accueil) ────────────────────────
+if active_page != "accueil":
+    villes_master = load_villes_master()
+    _def1 = "Colombes" if "Colombes" in villes_master else villes_master[0]
+    _def2 = "Angers"   if "Angers"   in villes_master else villes_master[1]
+
+    st.markdown("""
+<style>
+.ville-label-1 { font-size:0.65rem; font-weight:700; color:#000091;
+    text-transform:uppercase; letter-spacing:0.08em; margin-bottom:2px; }
+.ville-label-2 { font-size:0.65rem; font-weight:700; color:#E1000F;
+    text-transform:uppercase; letter-spacing:0.08em; margin-bottom:2px; }
+</style>""", unsafe_allow_html=True)
+
+    gc1, gc2 = st.columns(2)
+    with gc1:
+        st.markdown('<div class="ville-label-1">● VILLE 1</div>', unsafe_allow_html=True)
+        st.selectbox("Ville 1", villes_master,
+                     index=villes_master.index(_def1), key="global_ville1",
+                     label_visibility="collapsed")
+    with gc2:
+        st.markdown('<div class="ville-label-2">● VILLE 2</div>', unsafe_allow_html=True)
+        st.selectbox("Ville 2", villes_master,
+                     index=villes_master.index(_def2), key="global_ville2",
+                     label_visibility="collapsed")
+
 
 # ── Rendu de la page active ───────────────────────────────────────────────────
 

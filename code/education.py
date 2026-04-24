@@ -36,30 +36,19 @@ def render():
     df.loc[coords.index, "lat"] = pd.to_numeric(coords["lat"], errors="coerce")
     df.loc[coords.index, "lon"] = pd.to_numeric(coords["lon"], errors="coerce")
 
-    # ───────────────────────────────────────────────
-    # 🔵 Sélecteurs de villes (2 villes à comparer)
-    # ───────────────────────────────────────────────
-    st.markdown(
-        '<div class="section-title" style="margin-top:0;font-size:0.72rem;">Sélection des villes</div>',
-        unsafe_allow_html=True,
-    )
-
-    villes_dispo = sorted(df["Nom_commune"].dropna().unique().tolist())
-
-    c1, c2 = st.columns(2)
-    with c1:
-        ville_1 = st.selectbox("Ville 1", villes_dispo, index=0)
-    with c2:
-        ville_2 = st.selectbox("Ville 2", villes_dispo, index=1)
+    ville_1 = st.session_state.get("global_ville1", "Colombes")
+    ville_2 = st.session_state.get("global_ville2", "Angers")
 
     # Filtrage sur les deux villes
     df_villes = df[df["Nom_commune"].isin([ville_1, ville_2])]
 
-    # Sous-titre dynamique
-    st.markdown(
-        f'<div class="section-sub" style="margin-bottom:18px;">— {ville_1} & {ville_2}</div>',
-        unsafe_allow_html=True,
-    )
+    manquantes = [v for v in [ville_1, ville_2]
+                  if df[df["Nom_commune"] == v].empty]
+    if manquantes:
+        st.warning(f"Données éducation non disponibles pour : **{', '.join(manquantes)}**")
+        if len(manquantes) == 2:
+            return
+
 
     # ───────────────────────────────────────────────
     # 🔵 Filtres supplémentaires (type, statut, options)

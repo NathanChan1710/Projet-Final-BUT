@@ -105,22 +105,27 @@ def agreger(df):
 
 # ── RENDU ──────────────────────────────────────────────────────────────────────
 def render():
-
-    # ── Sélecteurs ───────────────────────────────────────────────────────────
-    col1, col2, col3 = st.columns([1, 1, 1])
-
-    with col1:
-        ville_1 = st.selectbox("Ville 1", sorted(VILLES.keys()))
-
-    with col2:
-        ville_2 = st.selectbox("Ville 2", sorted(VILLES.keys()))
-
-    with col3:
-        var_label = st.selectbox("Indicateur", list(VARIABLES_HISTORIQUE.keys()))
+    # ── Titre de section ──────────────────────────────────────────────────────
+    st.markdown(
+        '<div class="section-title">Météo</div>',
+        unsafe_allow_html=True,
+    )
+    # ── Lecture des villes globales ───────────────────────────────────────────
+    ville_1 = st.session_state.get("global_ville1", "Colombes")
+    ville_2 = st.session_state.get("global_ville2", "Angers")
 
     if ville_1 == ville_2:
         st.warning("Veuillez choisir deux villes différentes")
         st.stop()
+
+    if ville_1 not in VILLES:
+        st.warning(f"Données météo non disponibles pour **{ville_1}** (coordonnées manquantes).")
+        return
+    if ville_2 not in VILLES:
+        st.warning(f"Données météo non disponibles pour **{ville_2}** (coordonnées manquantes).")
+        return
+
+    var_label = st.selectbox("Indicateur", list(VARIABLES_HISTORIQUE.keys()))
 
     lat1, lon1 = VILLES[ville_1]["lat"], VILLES[ville_1]["lon"]
     lat2, lon2 = VILLES[ville_2]["lat"], VILLES[ville_2]["lon"]

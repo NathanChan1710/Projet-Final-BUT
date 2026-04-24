@@ -210,8 +210,7 @@ def render():
     _inject_page_css()
     _inject_selector_css()
 
-    dl     = load_logement()
-    villes = sorted(dl["libelle_geo"].dropna().unique().tolist())
+    dl = load_logement()
 
     # ── Titre de section DSFR ─────────────────────────────────────────────────
     st.markdown(
@@ -220,31 +219,9 @@ def render():
         unsafe_allow_html=True,
     )
 
-    # ── Sélecteurs de villes ──────────────────────────────────────────────────
-    s1, s2, s3 = st.columns(3)
-    with s1:
-        st.markdown('<div class="selector-label ville1">VILLE 1</div>', unsafe_allow_html=True)
-        ville1 = st.selectbox(
-            "Ville 1", villes,
-            index=villes.index("Ville1") if "Ville1" in villes else 0,
-            key="log_ville1", label_visibility="collapsed",
-        )
-    with s2:
-        st.markdown('<div class="selector-label ville2">VILLE 2</div>', unsafe_allow_html=True)
-        default2 = "Ville2" if "Ville2" in villes else (villes[1] if len(villes) > 1 else villes[0])
-        ville2 = st.selectbox(
-            "Ville 2", villes,
-            index=villes.index(default2),
-            key="log_ville2", label_visibility="collapsed",
-        )
-    with s3:
-        st.markdown('<div class="selector-label indic">INDICATEUR</div>', unsafe_allow_html=True)
-        st.selectbox(
-            "Indicateur", ["Prix au m²"],
-            key="log_indic", label_visibility="collapsed",
-        )
+    ville1 = st.session_state.get("global_ville1", "Colombes")
+    ville2 = st.session_state.get("global_ville2", "Angers")
 
-    # ── Garde-fou : deux villes différentes ──────────────────────────────────
     if ville1 == ville2:
         st.markdown(
             '<div class="warning-box">⚠️ Veuillez choisir deux villes différentes.</div>',
@@ -252,8 +229,14 @@ def render():
         )
         return
 
-    col_l = dl[dl["libelle_geo"] == ville1].iloc[0]
-    ang_l = dl[dl["libelle_geo"] == ville2].iloc[0]
+    rows1 = dl[dl["libelle_geo"] == ville1]
+    rows2 = dl[dl["libelle_geo"] == ville2]
+    if rows1.empty or rows2.empty:
+        manquantes = [v for v, r in [(ville1, rows1), (ville2, rows2)] if r.empty]
+        st.warning(f"Données logement non disponibles pour : {', '.join(manquantes)}")
+        return
+    col_l = rows1.iloc[0]
+    ang_l = rows2.iloc[0]
 
     diff_apt = int(col_l["moy_prix_m2_whole_appartement"] - ang_l["moy_prix_m2_whole_appartement"])
     diff_pct = round(diff_apt / ang_l["moy_prix_m2_whole_appartement"] * 100, 1)

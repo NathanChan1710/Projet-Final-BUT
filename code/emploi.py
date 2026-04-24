@@ -217,7 +217,6 @@ def render():
     etab_avail  = [c for c in ETAB_COLS if c in df.columns]
     sala_avail  = [c for c in SALA_COLS  if c in df.columns]
     years_avail = [int(c.split()[-1]) for c in etab_avail]
-    villes      = sorted(df["Nom commune"].dropna().unique().tolist())
 
     # ── Titre DSFR ────────────────────────────────────────────────────────────
     st.markdown(
@@ -226,43 +225,24 @@ def render():
         unsafe_allow_html=True,
     )
 
-    # ── Sélecteurs ────────────────────────────────────────────────────────────
-    col1, col2, col3 = st.columns([2, 2, 1])
-    with col1:
-        ville1 = st.selectbox("Ville 1", villes, index=0, key="e_v1")
-    with col2:
-        ville2 = st.selectbox("Ville 2", villes, index=min(1, len(villes) - 1), key="e_v2")
-    with col3:
-        st.markdown("<div style='height:1.85rem'></div>", unsafe_allow_html=True)
-        comparer = st.button("Comparer ▶", key="e_btn", use_container_width=True)
+    v1 = st.session_state.get("global_ville1", "Colombes")
+    v2 = st.session_state.get("global_ville2", "Angers")
 
-    if ville1 == ville2:
+    if v1 == v2:
         st.warning("Sélectionnez deux communes différentes.")
         return
-
-    if not comparer and "e_compared" not in st.session_state:
-        st.markdown(
-            '<div class="emploi-placeholder">'
-            'Sélectionnez deux communes et cliquez sur <strong>Comparer ▶</strong>'
-            '</div>',
-            unsafe_allow_html=True,
-        )
-        return
-
-    if comparer:
-        st.session_state["e_compared"] = (ville1, ville2)
-
-    v1, v2 = st.session_state.get("e_compared", (ville1, ville2))
 
     mask = df["Nom commune"].isin([v1, v2])
     dff  = df[mask].copy()
     sub1 = dff[dff["Nom commune"] == v1]
     sub2 = dff[dff["Nom commune"] == v2]
 
-    st.markdown(
-        f'<div class="emploi-compare-label">Comparaison : {v1} — {v2}</div>',
-        unsafe_allow_html=True,
-    )
+    manquantes = [v for v, s in [(v1, sub1), (v2, sub2)] if s.empty]
+    if manquantes:
+        st.warning(f"Données emploi non disponibles pour : **{', '.join(manquantes)}**")
+        if len(manquantes) == 2:
+            return
+
 
     # ── Filtres secondaires ───────────────────────────────────────────────────
     col_a, col_b, _ = st.columns([2, 2, 2])

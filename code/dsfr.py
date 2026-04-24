@@ -11,7 +11,7 @@ TEXTE   = "#1e1e1e"
 COLORS  = ["#000091", "#E1000F", "#008941", "#F28E2B", "#76B7B2", "#EDC948", "#B07AA1"]
 
 
-def inject_css(active_page: str = "meteo"):
+def inject_css():
     """Injecte le CSS DSFR global + navbar."""
     st.markdown(f"""
 <style>
@@ -152,6 +152,17 @@ def inject_css(active_page: str = "meteo"):
     /* ── Tableau ── */
     .stDataFrame {{ border: 1px solid {GRIS_B}; }}
 
+    /* ── Bouton primaire (CTA accueil) ── */
+    .stButton > button[kind="primary"] {{
+        background: {BLEU} !important; color: white !important;
+        border-bottom: none !important; font-size: 1rem !important;
+        padding: 14px 32px !important; letter-spacing: 0.04em !important;
+    }}
+    .stButton > button[kind="primary"]:hover {{
+        background: #0000c8 !important; color: white !important;
+        border-bottom: none !important;
+    }}
+
     /* ── Footer ── */
     .gov-footer {{
         margin-top: 48px; border-top: 1px solid {GRIS_B};
@@ -176,42 +187,52 @@ def render_header(tagline: str = "Comparateur de communes françaises"):
 
 
 def render_navbar(active_page: str):
-    """Navbar horizontale DSFR avec navigation Streamlit (sans nouvel onglet)."""
-
+    """Navbar horizontale DSFR — boutons stylisés fond blanc / texte bleu."""
     pages = [
-        ("accueil",     "Accueil"),
+        ("accueil",   "Accueil"),
         ("donnees",   "Données générales"),
         ("meteo",     "Météo"),
-
         ("education", "Éducation"),
-        ("sport", "Sport"),
-        ("emploi", "Emploi"),
-        ("culture", "Culture"),
-        ("logement",  "Logement")
+        ("sport",     "Sport"),
+        ("emploi",    "Emploi"),
+        ("culture",   "Culture"),
+        ("logement",  "Logement"),
     ]
 
-    cols = st.columns(len(pages))
+    st.markdown("""<style>
+    .stButton > button {
+        background:#ffffff !important; color:#000091 !important;
+        border:none !important; border-radius:0 !important;
+        border-bottom:3px solid transparent !important;
+        font-size:0.72rem !important; font-weight:700 !important;
+        text-transform:uppercase !important; letter-spacing:0.06em !important;
+        padding:12px 4px !important; width:100% !important;
+        transition:border-bottom 0.15s !important;
+    }
+    .stButton > button:hover {
+        background:#f0f0f8 !important; color:#000091 !important;
+        border-bottom:3px solid #000091 !important;
+    }
+    .nav-active-tab {
+        background:#f0f0f8; color:#000091;
+        font-size:0.72rem; font-weight:700;
+        text-transform:uppercase; letter-spacing:0.06em;
+        padding:12px 4px; border-bottom:3px solid #E1000F;
+        text-align:center; display:flex;
+        align-items:center; justify-content:center; min-height:44px;
+    }
+    </style>""", unsafe_allow_html=True)
 
+    cols = st.columns(len(pages))
     for i, (key, label) in enumerate(pages):
         with cols[i]:
-
-            # Style actif
             if key == active_page:
                 st.markdown(
-                    f"""
-                    <div style="
-                        text-align:center;
-                        font-weight:bold;
-                        border-bottom:3px solid #000091;
-                        padding:8px;
-                    ">
-                        {label}
-                    </div>
-                    """,
-                    unsafe_allow_html=True
+                    f'<div class="nav-active-tab">{label}</div>',
+                    unsafe_allow_html=True,
                 )
             else:
-                if st.button(label, use_container_width=True):
+                if st.button(label, key=f"nav_{key}", use_container_width=True):
                     st.query_params["page"] = key
                     st.rerun()
 

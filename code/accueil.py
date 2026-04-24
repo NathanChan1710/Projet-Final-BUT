@@ -230,6 +230,7 @@ def render():
         unsafe_allow_html=True,
     )
 
+
     cards_html = f"""
     <section class="cards-grid">
         <article class="info-card">

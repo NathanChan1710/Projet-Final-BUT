@@ -248,37 +248,21 @@ def render():
         unsafe_allow_html=True,
     )
 
-    col1, col2 = st.columns(2)
+    ville_1 = st.session_state.get("global_ville1", "Colombes")
+    ville_2 = st.session_state.get("global_ville2", "Angers")
 
-    with col1:
-        ville_1 = st.selectbox(
-            "Ville 1",
-            sorted(dg["nom_standard"].unique()),
-            index=sorted(dg["nom_standard"].unique()).index("Colombes") 
-            if "Colombes" in dg["nom_standard"].values else 0
-        )
-
-    with col2:
-        ville_2 = st.selectbox(
-            "Ville 2",
-            sorted(dg["nom_standard"].unique()),
-            index=sorted(dg["nom_standard"].unique()).index("Angers")
-            if "Angers" in dg["nom_standard"].values else 1
-        )
-
-    # Récupération des lignes
-    row1 = dg[dg["nom_standard"] == ville_1].iloc[0]
-    row2 = dg[dg["nom_standard"] == ville_2].iloc[0]
+    rows1 = dg[dg["nom_standard"] == ville_1]
+    rows2 = dg[dg["nom_standard"] == ville_2]
+    if rows1.empty or rows2.empty:
+        st.warning("Ville non trouvée dans les données générales.")
+        return
+    row1 = rows1.iloc[0]
+    row2 = rows2.iloc[0]
 
     # Couleurs dynamiques
     color1 = COLOMBES
     color2 = ANGERS
 
-    # Sous-titre dynamique
-    st.markdown(
-        f'<div class="pg-subtitle">Comparaison : {ville_1} · {ville_2}</div>',
-        unsafe_allow_html=True,
-    )
 
     # ───────────────────────────────────────────────
     # 🔵 Métriques synthétiques

@@ -289,8 +289,6 @@ def render():
     if df is None:
         return
 
-    villes = sorted(df[COL["commune"]].dropna().unique().tolist())
-
     # ── Titre DSFR ────────────────────────────────────────────────────────────
     st.markdown(
         '<div class="section-title">Sport'
@@ -298,33 +296,12 @@ def render():
         unsafe_allow_html=True,
     )
 
-    # ── Sélecteurs ────────────────────────────────────────────────────────────
-    col1, col2, col3 = st.columns([2, 2, 1])
-    with col1:
-        ville1 = st.selectbox("Ville 1", villes, index=0, key="s_v1")
-    with col2:
-        ville2 = st.selectbox("Ville 2", villes, index=min(1, len(villes) - 1), key="s_v2")
-    with col3:
-        st.markdown("<div style='height:1.85rem'></div>", unsafe_allow_html=True)
-        comparer = st.button("Comparer ▶", key="s_btn", use_container_width=True)
+    v1 = st.session_state.get("global_ville1", "Colombes")
+    v2 = st.session_state.get("global_ville2", "Angers")
 
-    if ville1 == ville2:
+    if v1 == v2:
         st.warning("Sélectionnez deux communes différentes.")
         return
-
-    if not comparer and "s_compared" not in st.session_state:
-        st.markdown(
-            '<div class="sport-placeholder">'
-            'Sélectionnez deux communes et cliquez sur <strong>Comparer ▶</strong>'
-            '</div>',
-            unsafe_allow_html=True,
-        )
-        return
-
-    if comparer:
-        st.session_state["s_compared"] = (ville1, ville2)
-
-    v1, v2 = st.session_state.get("s_compared", (ville1, ville2))
 
     # Filtrage
     mask = df[COL["commune"]].isin([v1, v2])
@@ -332,10 +309,11 @@ def render():
     sub1 = dff[dff[COL["commune"]] == v1]
     sub2 = dff[dff[COL["commune"]] == v2]
 
-    st.markdown(
-        f'<div class="sport-compare-label">Comparaison : {v1} — {v2}</div>',
-        unsafe_allow_html=True,
-    )
+    manquantes = [v for v, s in [(v1, sub1), (v2, sub2)] if s.empty]
+    if manquantes:
+        st.warning(f"Données sport non disponibles pour : **{', '.join(manquantes)}**")
+        if len(manquantes) == 2:
+            return
 
     # ── Filtres secondaires ───────────────────────────────────────────────────
     col_f1, col_f2, col_f3 = st.columns(3)
