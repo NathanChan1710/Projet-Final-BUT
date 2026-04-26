@@ -12,6 +12,26 @@ BASE_DIR = Path(__file__).parent          # dossier code/
 DATA_DIR = BASE_DIR.parent / "data" / "processed"
 
 
+def _fit_bounds_with_margin(map_df: pd.DataFrame, lat_col: str, lon_col: str, padding_ratio: float = 0.18):
+    """Retourne des bornes Folium élargies pour laisser une marge autour des points."""
+    coords = map_df[[lat_col, lon_col]].dropna()
+    if coords.empty:
+        return None
+
+    lat_min, lat_max = coords[lat_col].min(), coords[lat_col].max()
+    lon_min, lon_max = coords[lon_col].min(), coords[lon_col].max()
+
+    lat_span = max(lat_max - lat_min, 0.01)
+    lon_span = max(lon_max - lon_min, 0.01)
+    lat_pad = max(lat_span * padding_ratio, 0.02)
+    lon_pad = max(lon_span * padding_ratio, 0.02)
+
+    return [
+        [lat_min - lat_pad, lon_min - lon_pad],
+        [lat_max + lat_pad, lon_max + lon_pad],
+    ]
+
+
 def render():
     # ── Titre de section ──────────────────────────────────────────────────────
     st.markdown(
@@ -299,6 +319,10 @@ def render():
             popup=folium.Popup(popup_html, max_width=330),
             tooltip=nom,
         ).add_to(m)
+
+    bounds = _fit_bounds_with_margin(map_data, "lat", "lon")
+    if bounds:
+        m.fit_bounds(bounds)
 
     st_folium(m, width="100%", height=520, returned_objects=[])
 

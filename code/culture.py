@@ -4,6 +4,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import math
 from pathlib import Path
 from dsfr import BLEU, ROUGE, VERT, GRIS_B, TEXTE, COLORS, metric_box
 
@@ -96,6 +97,37 @@ def _score_bar(score: float, label: str):
     </div>
     <div style="font-size:.75rem;color:{color};font-weight:700;margin-top:3px;">{score:.1f} %</div>
 </div>""", unsafe_allow_html=True)
+
+
+def _map_view_from_points(df: pd.DataFrame, lat_col: str, lon_col: str, padding_ratio: float = 0.18):
+    """Calcule un centre et un zoom qui gardent tous les points visibles avec marge."""
+    coords = df[[lat_col, lon_col]].dropna()
+    if coords.empty:
+        return dict(center=dict(lat=47.0, lon=2.0), zoom=5.5)
+
+    lat_min, lat_max = coords[lat_col].min(), coords[lat_col].max()
+    lon_min, lon_max = coords[lon_col].min(), coords[lon_col].max()
+
+    lat_span = max(lat_max - lat_min, 0.01)
+    lon_span = max(lon_max - lon_min, 0.01)
+    lat_pad = max(lat_span * padding_ratio, 0.02)
+    lon_pad = max(lon_span * padding_ratio, 0.02)
+
+    padded_lat_span = lat_span + (2 * lat_pad)
+    padded_lon_span = lon_span + (2 * lon_pad)
+
+    zoom_lon = math.log2(360 / padded_lon_span)
+    zoom_lat = math.log2(170 / padded_lat_span)
+    zoom = min(zoom_lon, zoom_lat, 12)
+    zoom = max(zoom, 4)
+
+    return dict(
+        center=dict(
+            lat=(lat_min + lat_max) / 2,
+            lon=(lon_min + lon_max) / 2,
+        ),
+        zoom=zoom,
+    )
 
 
 # ── Chargement & nettoyage des données ───────────────────────────────────────
@@ -477,6 +509,7 @@ def render():
             [COL["ville"], COL["lat"], COL["lon"], COL["type"], COL["nom"]]
         ].dropna(subset=[COL["lat"], COL["lon"]])
         if not map_df.empty:
+            map_view = _map_view_from_points(map_df, COL["lat"], COL["lon"])
             fig_map = px.scatter_mapbox(
                 map_df,
                 lat=COL["lat"], lon=COL["lon"],
@@ -484,7 +517,8 @@ def render():
                 color_discrete_map={v1: BLEU, v2: ROUGE},
                 hover_name=COL["nom"],
                 hover_data={COL["type"]: True, COL["lat"]: False, COL["lon"]: False},
-                zoom=10,
+                zoom=map_view["zoom"],
+                center=map_view["center"],
                 mapbox_style="open-street-map",
                 height=450,
             )
