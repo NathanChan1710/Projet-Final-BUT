@@ -370,7 +370,7 @@ def render_footer(source: str = "Open-Meteo, INSEE, data.gouv.fr"):
                     </span>
                     <span>GitHub</span>
                 </a>
-                <a class="footer-card-link" href="https://portfolio-personne-2.fr" target="_blank" rel="noopener noreferrer">
+                <a class="footer-card-link" href="https://manohyratsimba.netlify.app/" target="_blank" rel="noopener noreferrer">
                     <span class="footer-link-icon">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M18.93 11H15.96A15.9 15.9 0 0 0 14.82 5.73A8.03 8.03 0 0 1 18.93 11M12 4.06C12.83 5.26 13.5 7.03 13.83 11H10.17C10.5 7.03 11.17 5.26 12 4.06M9.18 5.73A15.9 15.9 0 0 0 8.04 11H5.07A8.03 8.03 0 0 1 9.18 5.73M5.07 13H8.04A15.9 15.9 0 0 0 9.18 18.27A8.03 8.03 0 0 1 5.07 13M12 19.94C11.17 18.74 10.5 16.97 10.17 13H13.83C13.5 16.97 12.83 18.74 12 19.94M14.82 18.27A15.9 15.9 0 0 0 15.96 13H18.93A8.03 8.03 0 0 1 14.82 18.27Z"/></svg>
                     </span>
@@ -393,19 +393,13 @@ def render_footer(source: str = "Open-Meteo, INSEE, data.gouv.fr"):
                     </span>
                     <span>GitHub</span>
                 </a>
-                <a class="footer-card-link" href="https://portfolio-personne-3.fr" target="_blank" rel="noopener noreferrer">
-                    <span class="footer-link-icon">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M18.93 11H15.96A15.9 15.9 0 0 0 14.82 5.73A8.03 8.03 0 0 1 18.93 11M12 4.06C12.83 5.26 13.5 7.03 13.83 11H10.17C10.5 7.03 11.17 5.26 12 4.06M9.18 5.73A15.9 15.9 0 0 0 8.04 11H5.07A8.03 8.03 0 0 1 9.18 5.73M5.07 13H8.04A15.9 15.9 0 0 0 9.18 18.27A8.03 8.03 0 0 1 5.07 13M12 19.94C11.17 18.74 10.5 16.97 10.17 13H13.83C13.5 16.97 12.83 18.74 12 19.94M14.82 18.27A15.9 15.9 0 0 0 15.96 13H18.93A8.03 8.03 0 0 1 14.82 18.27Z"/></svg>
-                    </span>
-                    <span>Portfolio</span>
-                </a>
             </div>
         </div>
     </div>
     <div class="footer-project-box">
         <div class="footer-project-title">Repo du projet</div>
         <div class="footer-project-text">Accéder au dépôt GitHub de France Comparateur</div>
-        <a class="footer-project-link" href="https://github.com/organisation/repo-projet" target="_blank" rel="noopener noreferrer">Voir le repo GitHub</a>
+        <a class="footer-project-link" href="https://github.com/NathanChan1710/Projet-Final-BUT" target="_blank" rel="noopener noreferrer">Voir le repo GitHub</a>
     </div>
     France Comparateur &nbsp;&bull;&nbsp; Sources : {source}
     &nbsp;&bull;&nbsp; Données publiques — Usage interne
