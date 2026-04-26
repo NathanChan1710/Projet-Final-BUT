@@ -17,6 +17,14 @@ def load_villes_master():
     return sorted(df["nom_standard"].dropna().unique().tolist())
 
 
+def _sync_global_ville1():
+    st.session_state["global_ville1"] = st.session_state["ville1_selector"]
+
+
+def _sync_global_ville2():
+    st.session_state["global_ville2"] = st.session_state["ville2_selector"]
+
+
 # ── Configuration (une seule fois, ici) ───────────────────────────────────────
 st.set_page_config(
     page_title="France Comparateur",
@@ -46,6 +54,15 @@ if active_page != "accueil":
     _def1 = "Colombes" if "Colombes" in villes_master else villes_master[0]
     _def2 = "Angers"   if "Angers"   in villes_master else villes_master[1]
 
+    if "global_ville1" not in st.session_state or st.session_state["global_ville1"] not in villes_master:
+        st.session_state["global_ville1"] = _def1
+    if "global_ville2" not in st.session_state or st.session_state["global_ville2"] not in villes_master:
+        st.session_state["global_ville2"] = _def2
+    if "ville1_selector" not in st.session_state or st.session_state["ville1_selector"] != st.session_state["global_ville1"]:
+        st.session_state["ville1_selector"] = st.session_state["global_ville1"]
+    if "ville2_selector" not in st.session_state or st.session_state["ville2_selector"] != st.session_state["global_ville2"]:
+        st.session_state["ville2_selector"] = st.session_state["global_ville2"]
+
     st.markdown("""
 <style>
 .ville-label-1 { font-size:0.65rem; font-weight:700; color:#000091;
@@ -58,12 +75,12 @@ if active_page != "accueil":
     with gc1:
         st.markdown('<div class="ville-label-1">● VILLE 1</div>', unsafe_allow_html=True)
         st.selectbox("Ville 1", villes_master,
-                     index=villes_master.index(_def1), key="global_ville1",
+                     key="ville1_selector", on_change=_sync_global_ville1,
                      label_visibility="collapsed")
     with gc2:
         st.markdown('<div class="ville-label-2">● VILLE 2</div>', unsafe_allow_html=True)
         st.selectbox("Ville 2", villes_master,
-                     index=villes_master.index(_def2), key="global_ville2",
+                     key="ville2_selector", on_change=_sync_global_ville2,
                      label_visibility="collapsed")
 
 

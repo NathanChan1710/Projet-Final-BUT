@@ -5,17 +5,18 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-from dsfr import BLEU, ROUGE, VERT, GRIS_F, GRIS_B, TEXTE, metric_box
+from dsfr import BLEU, GRIS_F, GRIS_B, TEXTE, metric_box
 
 from pathlib import Path
-BASE_DIR = Path(__file__).parent          # dossier code/
+
+BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR.parent / "data" / "processed"
 
 
 # ── Couleurs propres à cette page ─────────────────────────────────────────────
 Ville1 = "#000091"   # bleu DSFR
-Ville2   = "#E1000F"   # rouge DSFR
-BORDER   = GRIS_B
+Ville2 = "#E1000F"   # rouge DSFR
+BORDER = GRIS_B
 
 
 # ── Chargement des données ────────────────────────────────────────────────────
@@ -28,40 +29,6 @@ def load_logement():
 def _inject_page_css():
     st.markdown(f"""
 <style>
-/* ── Bandeau KPI ── */
-.kpi-strip {{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    border: 1px solid {GRIS_B};
-    margin-bottom: 28px;
-}}
-.kpi-item {{
-    padding: 16px 20px;
-    border-right: 1px solid {GRIS_B};
-    background: white;
-}}
-.kpi-item:last-child {{ border-right: none; }}
-.kpi-label {{
-    font-size: 0.67rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #666;
-    margin-bottom: 6px;
-}}
-.kpi-value {{
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: {TEXTE};
-    line-height: 1.1;
-}}
-.kpi-sub {{
-    font-size: 0.72rem;
-    color: #888;
-    margin-top: 4px;
-}}
-
 /* ── Synthèse ── */
 .synth-grid {{
     display: grid;
@@ -84,7 +51,7 @@ def _inject_page_css():
     border-bottom: 2px solid {GRIS_B};
 }}
 .synth-city.Ville1 {{ color: {Ville1}; border-bottom-color: {Ville1}; }}
-.synth-city.Ville2   {{ color: {Ville2};   border-bottom-color: {Ville2};   }}
+.synth-city.Ville2 {{ color: {Ville2}; border-bottom-color: {Ville2}; }}
 .synth-row {{
     display: flex;
     justify-content: space-between;
@@ -147,7 +114,9 @@ def _base_layout(height=360, ytitle=""):
 
 def _bar_trace(name, x, y, color):
     return go.Bar(
-        name=name, x=x, y=y,
+        name=name,
+        x=x,
+        y=y,
         marker_color=color,
         text=[f"{int(v):,} €" if isinstance(v, float) else f"{int(v):,}" for v in y],
         textposition="outside",
@@ -156,18 +125,22 @@ def _bar_trace(name, x, y, color):
 
 
 # ── Onglet détail par type ────────────────────────────────────────────────────
-def _make_tab(tab, nb_c, moy_c, med_c, nb_a, moy_a, med_a):
+def _make_tab(tab, ville1, ville2, nb_c, moy_c, med_c, nb_a, moy_a, med_a):
     with tab:
         labels = ["Nb ventes", "Prix moyen (€/m²)", "Prix médian (€/m²)"]
         fig = go.Figure()
         fig.add_trace(go.Bar(
-            name="Ville1", x=labels, y=[nb_c, moy_c, med_c],
+            name=ville1,
+            x=labels,
+            y=[nb_c, moy_c, med_c],
             marker_color=Ville1,
             text=[f"{int(nb_c):,}", f"{int(moy_c):,} €", f"{int(med_c):,} €"],
             textposition="outside",
         ))
         fig.add_trace(go.Bar(
-            name="Ville2", x=labels, y=[nb_a, moy_a, med_a],
+            name=ville2,
+            x=labels,
+            y=[nb_a, moy_a, med_a],
             marker_color=Ville2,
             text=[f"{int(nb_a):,}", f"{int(moy_a):,} €", f"{int(med_a):,} €"],
             textposition="outside",
@@ -176,7 +149,11 @@ def _make_tab(tab, nb_c, moy_c, med_c, nb_a, moy_a, med_a):
         layout["bargap"] = 0.3
         layout.pop("bargroupgap", None)
         fig.update_layout(**layout)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            key=f"detail_{tab}_{ville1}_{ville2}_{labels[0]}"
+        )
 
 
 # ── CSS sélecteurs de ville ───────────────────────────────────────────────────
@@ -192,7 +169,7 @@ def _inject_selector_css():
 }}
 .selector-label.ville1 {{ color: {Ville1}; }}
 .selector-label.ville2 {{ color: {Ville2}; }}
-.selector-label.indic  {{ color: #444; }}
+.selector-label.indic {{ color: #444; }}
 .warning-box {{
     background: #fefce8;
     border: 1px solid #fde68a;
@@ -212,7 +189,6 @@ def render():
 
     dl = load_logement()
 
-    # ── Titre de section DSFR ─────────────────────────────────────────────────
     st.markdown(
         '<div class="section-title">Logement'
         '<span class="section-sub">Marché immobilier · DVF · data.gouv.fr</span></div>',
@@ -235,46 +211,37 @@ def render():
         manquantes = [v for v, r in [(ville1, rows1), (ville2, rows2)] if r.empty]
         st.warning(f"Données logement non disponibles pour : {', '.join(manquantes)}")
         return
+
     col_l = rows1.iloc[0]
     ang_l = rows2.iloc[0]
 
     diff_apt = int(col_l["moy_prix_m2_whole_appartement"] - ang_l["moy_prix_m2_whole_appartement"])
     diff_pct = round(diff_apt / ang_l["moy_prix_m2_whole_appartement"] * 100, 1)
-    sign     = "+" if diff_pct >= 0 else ""
+    sign = "+" if diff_pct >= 0 else ""
 
-    # ── KPI synthétiques ──────────────────────────────────────────────────────
-    c1, c2, c3, c4 = st.columns(4)
+    diff_mais = int(col_l["moy_prix_m2_whole_maison"] - ang_l["moy_prix_m2_whole_maison"])
+    diff_pct_mais = round(diff_mais / ang_l["moy_prix_m2_whole_maison"] * 100, 1)
+    sign_mais = "+" if diff_pct_mais >= 0 else ""
+
+    # ── KPI appartements ──────────────────────────────────────────────────────
+    c1, c2, c3 = st.columns(3)
     metric_box(c1, f"Prix m² appt. — {ville1}",
                f"{int(col_l['moy_prix_m2_whole_appartement']):,} €")
     metric_box(c2, f"Prix m² appt. — {ville2}",
                f"{int(ang_l['moy_prix_m2_whole_appartement']):,} €", theme="rouge")
-    metric_box(c3, f"Médiane appt. — {ville1}",
-               f"{int(col_l['med_prix_m2_whole_appartement']):,} €/m²")
-    metric_box(c4, "Écart appartements",
+    metric_box(c3, "Écart appartements",
                f"{sign}{diff_pct} %", theme="vert")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Bandeau KPI HTML ─────────────────────────────────────────────────────
-    st.markdown(f"""
-<div class="kpi-strip">
-  <div class="kpi-item">
-    <div class="kpi-label" style="color:{Ville1}">{ville1} · Prix m² appt.</div>
-    <div class="kpi-value">{int(col_l['moy_prix_m2_whole_appartement']):,} €</div>
-    <div class="kpi-sub">Médiane : {int(col_l['med_prix_m2_whole_appartement']):,} €/m²</div>
-  </div>
-  <div class="kpi-item">
-    <div class="kpi-label" style="color:{Ville2}">{ville2} · Prix m² appt.</div>
-    <div class="kpi-value">{int(ang_l['moy_prix_m2_whole_appartement']):,} €</div>
-    <div class="kpi-sub">Médiane : {int(ang_l['med_prix_m2_whole_appartement']):,} €/m²</div>
-  </div>
-  <div class="kpi-item">
-    <div class="kpi-label">Écart appartements</div>
-    <div class="kpi-value">{sign}{diff_pct} %</div>
-    <div class="kpi-sub">{ville1} est {sign}{diff_apt:,} €/m² {'plus chère' if diff_apt >= 0 else 'moins chère'}</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+    # ── KPI maisons ───────────────────────────────────────────────────────────
+    c4, c5, c6 = st.columns(3)
+    metric_box(c4, f"Prix m² maison — {ville1}",
+               f"{int(col_l['moy_prix_m2_whole_maison']):,} €")
+    metric_box(c5, f"Prix m² maison — {ville2}",
+               f"{int(ang_l['moy_prix_m2_whole_maison']):,} €", theme="rouge")
+    metric_box(c6, "Écart maisons",
+               f"{sign_mais}{diff_pct_mais} %", theme="vert")
 
     # ── Graphiques côte à côte ────────────────────────────────────────────────
     st.markdown(
@@ -283,50 +250,72 @@ def render():
     )
 
     categories = ["Appartements", "Maisons", "Ensemble"]
-    col_vals   = [
+    col_vals = [
         col_l["moy_prix_m2_whole_appartement"],
         col_l["moy_prix_m2_whole_maison"],
         col_l["moy_prix_m2_whole_apt_maison"],
     ]
-    ang_vals   = [
+    ang_vals = [
         ang_l["moy_prix_m2_whole_appartement"],
         ang_l["moy_prix_m2_whole_maison"],
         ang_l["moy_prix_m2_whole_apt_maison"],
     ]
 
     fig1 = go.Figure()
-    fig1.add_trace(_bar_trace("Ville1", categories, col_vals, Ville1))
-    fig1.add_trace(_bar_trace("Ville2",   categories, ang_vals, Ville2))
+    fig1.add_trace(_bar_trace(ville1, categories, col_vals, Ville1))
+    fig1.add_trace(_bar_trace(ville2, categories, ang_vals, Ville2))
     fig1.update_layout(**_base_layout(ytitle="€/m²"))
 
-    types  = ["Appartements", "Maisons", "Locaux"]
-    col_nb = [col_l["nb_ventes_whole_appartement"], col_l["nb_ventes_whole_maison"], col_l["nb_ventes_whole_local"]]
-    ang_nb = [ang_l["nb_ventes_whole_appartement"], ang_l["nb_ventes_whole_maison"], ang_l["nb_ventes_whole_local"]]
+    types = ["Appartements", "Maisons", "Locaux"]
+    col_nb = [
+        col_l["nb_ventes_whole_appartement"],
+        col_l["nb_ventes_whole_maison"],
+        col_l["nb_ventes_whole_local"],
+    ]
+    ang_nb = [
+        ang_l["nb_ventes_whole_appartement"],
+        ang_l["nb_ventes_whole_maison"],
+        ang_l["nb_ventes_whole_local"],
+    ]
 
     fig2 = go.Figure()
     fig2.add_trace(go.Bar(
-        name="Ville1", x=types, y=col_nb,
+        name=ville1,
+        x=types,
+        y=col_nb,
         marker_color=Ville1,
         text=[f"{int(v):,}" for v in col_nb],
-        textposition="outside", textfont=dict(size=11),
+        textposition="outside",
+        textfont=dict(size=11),
     ))
     fig2.add_trace(go.Bar(
-        name="Ville2", x=types, y=ang_nb,
+        name=ville2,
+        x=types,
+        y=ang_nb,
         marker_color=Ville2,
         text=[f"{int(v):,}" for v in ang_nb],
-        textposition="outside", textfont=dict(size=11),
+        textposition="outside",
+        textfont=dict(size=11),
     ))
     fig2.update_layout(**_base_layout(ytitle="Nb transactions"))
 
     g1, g2 = st.columns(2)
     with g1:
-        st.plotly_chart(fig1, use_container_width=True, key="prix_m2")
+        st.plotly_chart(
+            fig1,
+            use_container_width=True,
+            key=f"prix_m2_{ville1}_{ville2}"
+        )
     with g2:
         st.markdown(
             '<div class="section-title" style="font-size:0.75rem">Volumes de transactions</div>',
             unsafe_allow_html=True,
         )
-        st.plotly_chart(fig2, use_container_width=True, key="volumes")
+        st.plotly_chart(
+            fig2,
+            use_container_width=True,
+            key=f"volumes_{ville1}_{ville2}"
+        )
 
     # ── Onglets détail ────────────────────────────────────────────────────────
     st.markdown('<div class="page-divider"></div>', unsafe_allow_html=True)
@@ -338,17 +327,17 @@ def render():
     tab1, tab2, tab3 = st.tabs(["Appartements", "Maisons", "Locaux commerciaux"])
 
     _make_tab(
-        tab1,
+        tab1, ville1, ville2,
         col_l["nb_ventes_whole_appartement"], col_l["moy_prix_m2_whole_appartement"], col_l["med_prix_m2_whole_appartement"],
         ang_l["nb_ventes_whole_appartement"], ang_l["moy_prix_m2_whole_appartement"], ang_l["med_prix_m2_whole_appartement"],
     )
     _make_tab(
-        tab2,
+        tab2, ville1, ville2,
         col_l["nb_ventes_whole_maison"], col_l["moy_prix_m2_whole_maison"], col_l["med_prix_m2_whole_maison"],
         ang_l["nb_ventes_whole_maison"], ang_l["moy_prix_m2_whole_maison"], ang_l["med_prix_m2_whole_maison"],
     )
     _make_tab(
-        tab3,
+        tab3, ville1, ville2,
         col_l["nb_ventes_whole_local"], col_l["moy_prix_m2_whole_local"], col_l["med_prix_m2_whole_local"],
         ang_l["nb_ventes_whole_local"], ang_l["moy_prix_m2_whole_local"], ang_l["med_prix_m2_whole_local"],
     )
@@ -360,11 +349,11 @@ def render():
         unsafe_allow_html=True,
     )
 
-    ratio_apt   = round(col_l["moy_prix_m2_whole_appartement"] / ang_l["moy_prix_m2_whole_appartement"], 1)
-    ratio_mais  = round(col_l["moy_prix_m2_whole_maison"]      / ang_l["moy_prix_m2_whole_maison"],      1)
-    pct_apt_col = round(col_l["nb_ventes_whole_appartement"]    / col_l["nb_ventes_whole_apt_maison"] * 100, 0)
-    pct_apt_ang = round(ang_l["nb_ventes_whole_appartement"]    / ang_l["nb_ventes_whole_apt_maison"] * 100, 0)
-    ratio_vol   = round(ang_l["nb_ventes_whole_apt_maison"]     / col_l["nb_ventes_whole_apt_maison"],    1)
+    ratio_apt = round(col_l["moy_prix_m2_whole_appartement"] / ang_l["moy_prix_m2_whole_appartement"], 1)
+    ratio_mais = round(col_l["moy_prix_m2_whole_maison"] / ang_l["moy_prix_m2_whole_maison"], 1)
+    pct_apt_col = round(col_l["nb_ventes_whole_appartement"] / col_l["nb_ventes_whole_apt_maison"] * 100, 0)
+    pct_apt_ang = round(ang_l["nb_ventes_whole_appartement"] / ang_l["nb_ventes_whole_apt_maison"] * 100, 0)
+    ratio_vol = round(ang_l["nb_ventes_whole_apt_maison"] / col_l["nb_ventes_whole_apt_maison"], 1)
 
     st.markdown(f"""
 <div class="synth-grid">
@@ -415,7 +404,6 @@ def render():
 </div>
 """, unsafe_allow_html=True)
 
-    # ── Source ────────────────────────────────────────────────────────────────
     st.markdown(
         '<div class="pg-source">'
         "Source : DVF · Demandes de Valeurs Foncières · data.gouv.fr · Traitements France Compare · 2026"
