@@ -4,6 +4,7 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
+import unicodedata
 
 from dsfr import inject_css, render_header, render_navbar, render_footer
 
@@ -17,12 +18,25 @@ def load_villes_master():
     return sorted(df["nom_standard"].dropna().unique().tolist())
 
 
+def _normalize_city_name(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value)
+    return "".join(char for char in normalized if not unicodedata.combining(char)).lower().strip()
+
+
+def _make_city_option(city_name: str) -> str:
+    return f"{city_name}|||{_normalize_city_name(city_name)}"
+
+
+def _extract_city_name(option: str) -> str:
+    return option.split("|||", 1)[0]
+
+
 def _sync_global_ville1():
-    st.session_state["global_ville1"] = st.session_state["ville1_selector"]
+    st.session_state["global_ville1"] = _extract_city_name(st.session_state["ville1_selector"])
 
 
 def _sync_global_ville2():
-    st.session_state["global_ville2"] = st.session_state["ville2_selector"]
+    st.session_state["global_ville2"] = _extract_city_name(st.session_state["ville2_selector"])
 
 
 # ── Configuration (une seule fois, ici) ───────────────────────────────────────
@@ -41,7 +55,7 @@ render_header("Comparateur de communes françaises — données publiques")
 params       = st.query_params
 active_page  = params.get("page", "accueil")
 # Valider la page (évite les valeurs inconnues)
-PAGES_VALIDES = {"accueil","donnees","meteo", "education", "logement","sport","emploi","culture"}
+PAGES_VALIDES = {"accueil","donnees","meteo", "education", "logement","sport","emploi","culture","villes","ville-ideale"}
 if active_page not in PAGES_VALIDES:
     active_page = "accueil"
 
@@ -49,8 +63,9 @@ if active_page not in PAGES_VALIDES:
 render_navbar(active_page)
 
 # ── Sélecteur de villes global (masqué sur l'accueil) ────────────────────────
-if active_page != "accueil":
+if active_page not in {"accueil", "villes", "ville-ideale"}:
     villes_master = load_villes_master()
+    villes_options = [_make_city_option(ville) for ville in villes_master]
     _def1 = "Colombes" if "Colombes" in villes_master else villes_master[0]
     _def2 = "Angers"   if "Angers"   in villes_master else villes_master[1]
 
@@ -58,10 +73,12 @@ if active_page != "accueil":
         st.session_state["global_ville1"] = _def1
     if "global_ville2" not in st.session_state or st.session_state["global_ville2"] not in villes_master:
         st.session_state["global_ville2"] = _def2
-    if "ville1_selector" not in st.session_state or st.session_state["ville1_selector"] != st.session_state["global_ville1"]:
-        st.session_state["ville1_selector"] = st.session_state["global_ville1"]
-    if "ville2_selector" not in st.session_state or st.session_state["ville2_selector"] != st.session_state["global_ville2"]:
-        st.session_state["ville2_selector"] = st.session_state["global_ville2"]
+    ville1_option = _make_city_option(st.session_state["global_ville1"])
+    ville2_option = _make_city_option(st.session_state["global_ville2"])
+    if "ville1_selector" not in st.session_state or st.session_state["ville1_selector"] != ville1_option:
+        st.session_state["ville1_selector"] = ville1_option
+    if "ville2_selector" not in st.session_state or st.session_state["ville2_selector"] != ville2_option:
+        st.session_state["ville2_selector"] = ville2_option
 
     st.markdown("""
 <style>
@@ -74,12 +91,14 @@ if active_page != "accueil":
     gc1, gc2 = st.columns(2)
     with gc1:
         st.markdown('<div class="ville-label-1">● VILLE 1</div>', unsafe_allow_html=True)
-        st.selectbox("Ville 1", villes_master,
+        st.selectbox("Ville 1", villes_options,
+                     format_func=_extract_city_name,
                      key="ville1_selector", on_change=_sync_global_ville1,
                      label_visibility="collapsed")
     with gc2:
         st.markdown('<div class="ville-label-2">● VILLE 2</div>', unsafe_allow_html=True)
-        st.selectbox("Ville 2", villes_master,
+        st.selectbox("Ville 2", villes_options,
+                     format_func=_extract_city_name,
                      key="ville2_selector", on_change=_sync_global_ville2,
                      label_visibility="collapsed")
 
@@ -117,5 +136,13 @@ elif active_page == "emploi":
 elif active_page == "culture":
     import culture
     culture.render()
+
+elif active_page == "villes":
+    import villes
+    villes.render()
+
+elif active_page == "ville-ideale":
+    import ville_ideale
+    ville_ideale.render()
 # ── Footer ────────────────────────────────────────────────────────────────────
 render_footer("Open-Meteo (archive &amp; prévisions), INSEE, data.gouv.fr")

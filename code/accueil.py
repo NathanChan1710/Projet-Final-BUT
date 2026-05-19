@@ -62,6 +62,18 @@ def render():
                 box-shadow: 0 16px 30px rgba(0, 0, 60, 0.04);
             }
 
+            .info-card-link {
+                text-decoration: none;
+                color: inherit;
+                display: block;
+            }
+
+            .info-card-link:hover .info-card {
+                transform: translateY(-4px);
+                box-shadow: 0 22px 36px rgba(0, 0, 60, 0.09);
+                border-color: #c9cff0;
+            }
+
             .card-icon {
                 width: 68px;
                 height: 68px;
@@ -239,24 +251,28 @@ def render():
             <div class="card-text">mais hésiter entre plusieurs villes</div>
             <div class="card-bottom"></div>
         </article>
-        <article class="info-card">
-            <div class="card-icon">{city_icon}</div>
-            <div class="card-title">Plus De 480 Villes À Comparer</div>
-            <div class="card-text">de plus 20 000 habitants</div>
-            <div class="card-bottom"></div>
-        </article>
+        <a class="info-card-link" href="/?page=villes" target="_self">
+            <article class="info-card">
+                <div class="card-icon">{city_icon}</div>
+                <div class="card-title">Plus De 480 Villes À Comparer</div>
+                <div class="card-text">de plus 20 000 habitants</div>
+                <div class="card-bottom"></div>
+            </article>
+        </a>
         <article class="info-card">
             <div class="card-icon">{criteria_icon}</div>
             <div class="card-title">Plusieurs Critères Disponibles</div>
             <div class="card-text">Logement, emploi, météo, éducation, culture</div>
             <div class="card-bottom"></div>
         </article>
-        <article class="info-card">
-            <div class="card-icon">{happy_icon}</div>
-            <div class="card-title">Trouver La Ville Idéale</div>
-            <div class="card-text">pour choisir plus sereinement votre future destination</div>
-            <div class="card-bottom"></div>
-        </article>
+        <a class="info-card-link" href="/?page=ville-ideale" target="_self">
+            <article class="info-card">
+                <div class="card-icon">{happy_icon}</div>
+                <div class="card-title">Trouver La Ville Idéale</div>
+                <div class="card-text">pour choisir plus sereinement votre future destination</div>
+                <div class="card-bottom"></div>
+            </article>
+        </a>
     </section>
     """
 
